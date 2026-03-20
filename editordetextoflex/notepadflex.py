@@ -1,22 +1,33 @@
 import sys
 import json
 import os
+import base64
 from datetime import datetime
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 
+# Importar bibliotecas de criptografia
+try:
+    from cryptography.fernet import Fernet
+    from cryptography.hazmat.primitives import hashes
+    from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+    CRYPTO_AVAILABLE = True
+except ImportError:
+    CRYPTO_AVAILABLE = False
+    print("Aviso: Biblioteca 'cryptography' não instalada. Funcionalidade de criptografia desabilitada.")
+
 class SimpleTextEditor(QMainWindow):
     """
-    Editor de texto simples que salva arquivos em formato JSON
-    Versão base para futuros aprimoramentos
+    Editor de texto simples que salva arquivos em formato JSON com suporte a criptografia
+    Versão com criptografia por senha
     """
     
     def __init__(self):
         super().__init__()
         
         # Configurações da janela
-        self.setWindowTitle("Editor Simples de Texto - WazzimaGiygg - Bloco de Notas JSON")
+        self.setWindowTitle("Editor Simples - Bloco de Notas JSON com Criptografia")
         self.setGeometry(100, 100, 900, 600)
         
         # Variáveis de estado
@@ -24,6 +35,7 @@ class SimpleTextEditor(QMainWindow):
         self.is_modified = False
         self.search_text = ""
         self.replace_text = ""
+        self.is_encrypted = False  # Indica se o arquivo atual está criptografado
         
         # Configurar interface
         self.init_ui()
@@ -67,6 +79,18 @@ class SimpleTextEditor(QMainWindow):
         save_as_action.setStatusTip("Salvar arquivo com novo nome")
         save_as_action.triggered.connect(self.save_file_as)
         file_menu.addAction(save_as_action)
+        
+        file_menu.addSeparator()
+        
+        # Ação para salvar com senha
+        self.save_encrypted_action = QAction("Salvar &Criptografado...", self)
+        self.save_encrypted_action.setShortcut("Ctrl+E")
+        self.save_encrypted_action.setStatusTip("Salvar arquivo com criptografia por senha")
+        self.save_encrypted_action.triggered.connect(self.save_encrypted_file)
+        if not CRYPTO_AVAILABLE:
+            self.save_encrypted_action.setEnabled(False)
+            self.save_encrypted_action.setToolTip("Funcionalidade indisponível - instale a biblioteca 'cryptography'")
+        file_menu.addAction(self.save_encrypted_action)
         
         file_menu.addSeparator()
         
@@ -267,7 +291,7 @@ class SimpleTextEditor(QMainWindow):
         self.replace_input = QLineEdit()
         self.replace_input.setPlaceholderText("Substituir por...")
         self.replace_input.returnPressed.connect(self.replace_current)
-        self.replace_input.hide()  # Inicialmente oculto
+        self.replace_input.hide()
         
         btn_find_prev = QPushButton("⬆")
         btn_find_prev.setToolTip("Anterior")
@@ -279,7 +303,6 @@ class SimpleTextEditor(QMainWindow):
         btn_find_next.setMaximumWidth(30)
         btn_find_next.clicked.connect(self.find_next)
         
-        # Tornar os botões atributos da classe
         self.btn_replace = QPushButton("Substituir")
         self.btn_replace.setToolTip("Substituir ocorrência atual")
         self.btn_replace.hide()
@@ -306,7 +329,7 @@ class SimpleTextEditor(QMainWindow):
         search_layout.addWidget(btn_close_search)
         
         layout.addWidget(self.search_bar)
-        self.search_bar.hide()  # Inicialmente oculto
+        self.search_bar.hide()
         
         # ========== BARRA DE STATUS ==========
         self.status_bar = self.statusBar()
@@ -322,6 +345,11 @@ class SimpleTextEditor(QMainWindow):
         # Label de tamanho do arquivo
         self.size_label = QLabel("0 caracteres")
         self.status_bar.addPermanentWidget(self.size_label)
+        
+        # Label de status de criptografia
+        self.encrypt_label = QLabel("🔓")
+        self.encrypt_label.setToolTip("Arquivo não criptografado")
+        self.status_bar.addPermanentWidget(self.encrypt_label)
     
     def apply_style(self):
         """Aplicar estilo visual"""
@@ -411,39 +439,49 @@ class SimpleTextEditor(QMainWindow):
     
     def show_welcome(self):
         """Mostrar mensagem de boas-vindas"""
-        welcome_text = """# Editor Simples - Bloco de Notas JSON
+        welcome_text = """# Editor Simples - Bloco de Notas JSON com Criptografia
 
 ## 📝 Bem-vindo!
 
-Este é um editor de texto simples que salva arquivos em formato JSON.
+Este é um editor de texto que salva arquivos em formato JSON com suporte a criptografia.
 
 ### ✨ Funcionalidades:
 - ✅ Salvar arquivos em formato JSON
-- ✅ Abrir arquivos existentes
+- ✅ Criptografia por senha (AES-256)
+- ✅ Abrir arquivos criptografados e não criptografados
 - ✅ Localizar e substituir texto
 - ✅ Desfazer/Refazer
 - ✅ Quebra de linha
 - ✅ Zoom ajustável
 
+### 🔒 Como usar a criptografia:
+- Use **Ctrl+E** ou menu Arquivo > "Salvar Criptografado..."
+- Digite uma senha forte para proteger seu arquivo
+- O arquivo será salvo com extensão .json (mas estará criptografado)
+- Ao abrir um arquivo criptografado, será solicitada a senha
+
 ### 🚀 Como usar:
 - Use **Ctrl+N** para novo arquivo
 - Use **Ctrl+O** para abrir
-- Use **Ctrl+S** para salvar
+- Use **Ctrl+S** para salvar (sem criptografia)
+- Use **Ctrl+E** para salvar com criptografia
 - Use **Ctrl+F** para localizar
 - Use **Ctrl+H** para substituir
 
 ### 📁 Formato JSON:
 Os arquivos são salvos com metadados incluindo:
-- Data de criação
-- Última modificação
-- Contagem de caracteres
+- Data de criação e modificação
+- Contagem de caracteres, palavras e linhas
+- Indicação de criptografia
 
 Divirta-se! 🎉
 """
         self.text_area.setPlainText(welcome_text)
         self.current_file = None
         self.is_modified = False
+        self.is_encrypted = False
         self.update_window_title()
+        self.update_encrypt_label()
     
     def on_text_changed(self):
         """Quando o texto muda"""
@@ -463,6 +501,8 @@ Divirta-se! 🎉
         title = "Editor Simples"
         if self.current_file:
             title += f" - {os.path.basename(self.current_file)}"
+        if self.is_encrypted:
+            title += " [Criptografado]"
         if self.is_modified:
             title += " *"
         self.setWindowTitle(title)
@@ -476,77 +516,211 @@ Divirta-se! 🎉
         
         self.size_label.setText(f"{chars} caracteres | {words} palavras | {lines} linhas")
     
-    def new_file(self):
-        """Criar novo arquivo"""
-        if self.check_save():
-            self.text_area.clear()
-            self.current_file = None
-            self.is_modified = False
-            self.update_window_title()
-            self.update_size_label()
-            self.status_bar.showMessage("Novo arquivo criado", 3000)
+    def update_encrypt_label(self):
+        """Atualizar label de criptografia na barra de status"""
+        if self.is_encrypted:
+            self.encrypt_label.setText("🔒")
+            self.encrypt_label.setToolTip("Arquivo criptografado")
+        else:
+            self.encrypt_label.setText("🔓")
+            self.encrypt_label.setToolTip("Arquivo não criptografado")
     
-    def open_file(self):
-        """Abrir arquivo"""
-        if not self.check_save():
+    # ========== FUNÇÕES DE CRIPTOGRAFIA ==========
+    
+    def derive_key(self, password: str, salt: bytes = None) -> tuple:
+        """Derivar chave a partir da senha usando PBKDF2"""
+        if salt is None:
+            salt = os.urandom(16)
+        
+        kdf = PBKDF2HMAC(
+            algorithm=hashes.SHA256(),
+            length=32,
+            salt=salt,
+            iterations=100000,
+        )
+        key = base64.urlsafe_b64encode(kdf.derive(password.encode()))
+        return key, salt
+    
+    def encrypt_content(self, content: str, password: str) -> dict:
+        """Criptografar o conteúdo com a senha"""
+        if not CRYPTO_AVAILABLE:
+            raise Exception("Biblioteca 'cryptography' não está instalada")
+        
+        # Gerar salt aleatório
+        salt = os.urandom(16)
+        
+        # Derivar chave
+        key, _ = self.derive_key(password, salt)
+        
+        # Criar cipher
+        f = Fernet(key)
+        
+        # Criptografar o conteúdo
+        encrypted_data = f.encrypt(content.encode('utf-8'))
+        
+        # Retornar dados criptografados com salt
+        return {
+            'encrypted': True,
+            'salt': base64.b64encode(salt).decode(),
+            'data': base64.b64encode(encrypted_data).decode(),
+            'algorithm': 'AES-256-CBC',
+            'key_derivation': 'PBKDF2-HMAC-SHA256'
+        }
+    
+    def decrypt_content(self, encrypted_data: dict, password: str) -> str:
+        """Descriptografar o conteúdo com a senha"""
+        if not CRYPTO_AVAILABLE:
+            raise Exception("Biblioteca 'cryptography' não está instalada")
+        
+        # Verificar se é um arquivo criptografado
+        if not encrypted_data.get('encrypted', False):
+            return None
+        
+        try:
+            # Recuperar salt
+            salt = base64.b64decode(encrypted_data['salt'])
+            
+            # Derivar chave
+            key, _ = self.derive_key(password, salt)
+            
+            # Criar cipher
+            f = Fernet(key)
+            
+            # Descriptografar
+            encrypted_content = base64.b64decode(encrypted_data['data'])
+            decrypted_content = f.decrypt(encrypted_content)
+            
+            return decrypted_content.decode('utf-8')
+        except Exception as e:
+            raise Exception("Senha incorreta ou arquivo corrompido")
+    
+    def get_password(self, title="Senha", message="Digite a senha:", is_new=False):
+        """Dialog para obter senha do usuário"""
+        dialog = QDialog(self)
+        dialog.setWindowTitle(title)
+        dialog.setModal(True)
+        layout = QVBoxLayout()
+        
+        # Mensagem
+        label = QLabel(message)
+        layout.addWidget(label)
+        
+        # Campo de senha
+        password_input = QLineEdit()
+        password_input.setEchoMode(QLineEdit.Password)
+        layout.addWidget(password_input)
+        
+        if is_new:
+            # Confirmar senha
+            label_confirm = QLabel("Confirme a senha:")
+            layout.addWidget(label_confirm)
+            
+            confirm_input = QLineEdit()
+            confirm_input.setEchoMode(QLineEdit.Password)
+            layout.addWidget(confirm_input)
+        
+        # Botões
+        button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        button_box.accepted.connect(dialog.accept)
+        button_box.rejected.connect(dialog.reject)
+        layout.addWidget(button_box)
+        
+        dialog.setLayout(layout)
+        
+        if dialog.exec_() == QDialog.Accepted:
+            password = password_input.text()
+            if is_new:
+                confirm = confirm_input.text()
+                if password != confirm:
+                    QMessageBox.warning(self, "Erro", "As senhas não coincidem!")
+                    return None
+                if not password:
+                    QMessageBox.warning(self, "Erro", "A senha não pode estar vazia!")
+                    return None
+            return password
+        
+        return None
+    
+    def save_encrypted_file(self):
+        """Salvar arquivo com criptografia"""
+        if not CRYPTO_AVAILABLE:
+            QMessageBox.critical(self, "Erro", 
+                               "Biblioteca 'cryptography' não está instalada.\n"
+                               "Instale com: pip install cryptography")
             return
         
-        file_path, _ = QFileDialog.getOpenFileName(
-            self, "Abrir Arquivo", "",
-            "Arquivos JSON (*.json);;Arquivos de Texto (*.txt);;Todos os Arquivos (*.*)"
+        # Verificar se precisa salvar antes
+        if self.is_modified and self.current_file and not self.is_encrypted:
+            reply = QMessageBox.question(
+                self, "Salvar?",
+                "O arquivo atual não está salvo. Deseja salvá-lo primeiro?",
+                QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel
+            )
+            if reply == QMessageBox.Cancel:
+                return
+            elif reply == QMessageBox.Yes:
+                self.save_file()
+        
+        # Escolher local para salvar
+        file_path, _ = QFileDialog.getSaveFileName(
+            self, "Salvar Arquivo Criptografado", "",
+            "Arquivos JSON (*.json);;Todos os Arquivos (*.*)"
         )
         
         if not file_path:
             return
         
+        # Obter senha
+        password = self.get_password("Criptografar Arquivo", 
+                                     "Digite uma senha para proteger o arquivo:", 
+                                     is_new=True)
+        if not password:
+            return
+        
         try:
-            if file_path.endswith('.json'):
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    data = json.load(f)
-                    if isinstance(data, dict) and 'content' in data:
-                        content = data['content']
-                        self.text_area.setPlainText(content)
-                    else:
-                        self.text_area.setPlainText(str(data))
-            else:
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    content = f.read()
-                    self.text_area.setPlainText(content)
+            content = self.text_area.toPlainText()
+            
+            # Criar metadados
+            metadata = {
+                'created': datetime.now().isoformat() if not self.current_file else None,
+                'modified': datetime.now().isoformat(),
+                'characters': len(content),
+                'words': len(content.split()),
+                'lines': content.count('\n') + 1
+            }
+            
+            # Criptografar o conteúdo
+            encrypted_data = self.encrypt_content(content, password)
+            
+            # Salvar dados criptografados com metadados
+            save_data = {
+                'encrypted': True,
+                'metadata': metadata,
+                'crypto_info': encrypted_data
+            }
+            
+            with open(file_path, 'w', encoding='utf-8') as f:
+                json.dump(save_data, f, indent=2, ensure_ascii=False)
             
             self.current_file = file_path
             self.is_modified = False
+            self.is_encrypted = True
             self.update_window_title()
-            self.update_size_label()
-            self.status_bar.showMessage(f"Arquivo carregado: {file_path}", 3000)
+            self.update_encrypt_label()
+            self.status_bar.showMessage(f"Arquivo criptografado salvo: {file_path}", 5000)
             
         except Exception as e:
-            QMessageBox.critical(self, "Erro", f"Erro ao abrir arquivo:\n{str(e)}")
-    
-    def save_file(self):
-        """Salvar arquivo"""
-        if self.current_file:
-            self.save_to_file(self.current_file)
-        else:
-            self.save_file_as()
-    
-    def save_file_as(self):
-        """Salvar arquivo como"""
-        file_path, _ = QFileDialog.getSaveFileName(
-            self, "Salvar Arquivo Como", "",
-            "Arquivos JSON (*.json);;Arquivos de Texto (*.txt);;Todos os Arquivos (*.*)"
-        )
-        
-        if file_path:
-            self.save_to_file(file_path)
+            QMessageBox.critical(self, "Erro", f"Erro ao salvar arquivo criptografado:\n{str(e)}")
     
     def save_to_file(self, file_path):
-        """Salvar conteúdo no arquivo"""
+        """Salvar conteúdo no arquivo (sem criptografia)"""
         try:
             content = self.text_area.toPlainText()
             
             if file_path.endswith('.json'):
                 # Salvar com metadados
                 data = {
+                    'encrypted': False,
                     'content': content,
                     'metadata': {
                         'created': datetime.now().isoformat() if not self.current_file else None,
@@ -565,11 +739,84 @@ Divirta-se! 🎉
             
             self.current_file = file_path
             self.is_modified = False
+            self.is_encrypted = False
             self.update_window_title()
+            self.update_encrypt_label()
             self.status_bar.showMessage(f"Arquivo salvo: {file_path}", 3000)
             
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao salvar arquivo:\n{str(e)}")
+    
+    def open_file(self):
+        """Abrir arquivo"""
+        if not self.check_save():
+            return
+        
+        file_path, _ = QFileDialog.getOpenFileName(
+            self, "Abrir Arquivo", "",
+            "Arquivos JSON (*.json);;Arquivos de Texto (*.txt);;Todos os Arquivos (*.*)"
+        )
+        
+        if not file_path:
+            return
+        
+        try:
+            if file_path.endswith('.json'):
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                    
+                    # Verificar se é arquivo criptografado
+                    if isinstance(data, dict) and data.get('encrypted', False):
+                        # Solicitar senha
+                        password = self.get_password("Arquivo Criptografado", 
+                                                    "Este arquivo está criptografado.\nDigite a senha para abrir:")
+                        if not password:
+                            return
+                        
+                        # Descriptografar
+                        content = self.decrypt_content(data['crypto_info'], password)
+                        if content is None:
+                            QMessageBox.critical(self, "Erro", "Falha ao descriptografar o arquivo.")
+                            return
+                        
+                        self.text_area.setPlainText(content)
+                        self.is_encrypted = True
+                    else:
+                        # Arquivo normal
+                        if isinstance(data, dict) and 'content' in data:
+                            content = data['content']
+                        else:
+                            content = str(data)
+                        self.text_area.setPlainText(content)
+                        self.is_encrypted = False
+            else:
+                # Arquivo de texto simples
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                    self.text_area.setPlainText(content)
+                self.is_encrypted = False
+            
+            self.current_file = file_path
+            self.is_modified = False
+            self.update_window_title()
+            self.update_size_label()
+            self.update_encrypt_label()
+            self.status_bar.showMessage(f"Arquivo carregado: {file_path}", 3000)
+            
+        except Exception as e:
+            QMessageBox.critical(self, "Erro", f"Erro ao abrir arquivo:\n{str(e)}")
+    
+    def new_file(self):
+        """Criar novo arquivo"""
+        if self.check_save():
+            self.text_area.clear()
+            self.current_file = None
+            self.is_modified = False
+            self.is_encrypted = False
+            self.update_window_title()
+            self.update_size_label()
+            self.update_encrypt_label()
+            self.status_bar.showMessage("Novo arquivo criado", 3000)
     
     def export_as_txt(self):
         """Exportar como TXT"""
@@ -604,6 +851,39 @@ Divirta-se! 🎉
         
         return True
     
+    def save_file(self):
+        """Salvar arquivo (formato normal ou criptografado dependendo do estado)"""
+        if self.current_file:
+            if self.is_encrypted:
+                # Se o arquivo atual é criptografado, salvar como criptografado
+                self.save_encrypted_file()
+            else:
+                self.save_to_file(self.current_file)
+        else:
+            # Perguntar se quer salvar criptografado ou não
+            reply = QMessageBox.question(
+                self, "Tipo de Salvamento",
+                "Deseja salvar com criptografia?",
+                QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel
+            )
+            
+            if reply == QMessageBox.Cancel:
+                return
+            elif reply == QMessageBox.Yes:
+                self.save_encrypted_file()
+            else:
+                self.save_file_as()
+    
+    def save_file_as(self):
+        """Salvar arquivo como (sem criptografia)"""
+        file_path, _ = QFileDialog.getSaveFileName(
+            self, "Salvar Arquivo Como", "",
+            "Arquivos JSON (*.json);;Arquivos de Texto (*.txt);;Todos os Arquivos (*.*)"
+        )
+        
+        if file_path:
+            self.save_to_file(file_path)
+    
     def closeEvent(self, event):
         """Evento de fechar a janela"""
         if self.check_save():
@@ -637,7 +917,6 @@ Divirta-se! 🎉
         """Mostrar barra de localização"""
         self.search_bar.show()
         self.search_input.setFocus()
-        # Esconder controles de substituição
         self.replace_input.hide()
         self.btn_replace.hide()
         self.btn_replace_all.hide()
@@ -646,7 +925,6 @@ Divirta-se! 🎉
         """Mostrar barra de substituição"""
         self.search_bar.show()
         self.search_input.setFocus()
-        # Mostrar controles de substituição
         self.replace_input.show()
         self.btn_replace.show()
         self.btn_replace_all.show()
@@ -656,7 +934,6 @@ Divirta-se! 🎉
         self.search_bar.hide()
         self.search_input.clear()
         self.replace_input.clear()
-        # Limpar destaques
         self.text_area.setExtraSelections([])
     
     def on_search_text_changed(self, text):
@@ -666,19 +943,15 @@ Divirta-se! 🎉
     
     def highlight_all(self):
         """Destacar todas as ocorrências"""
-        # Limpar seleções existentes
         extra_selections = []
         
         if self.search_text:
-            # Criar formato de destaque
             highlight_format = QTextCharFormat()
             highlight_format.setBackground(QColor(255, 255, 0, 100))
             
-            # Procurar todas as ocorrências
             document = self.text_area.document()
             cursor = QTextCursor(document)
             
-            # Usar find() em loop para encontrar todas as ocorrências
             while True:
                 cursor = document.find(self.search_text, cursor)
                 if cursor.isNull():
@@ -696,19 +969,15 @@ Divirta-se! 🎉
         if not self.search_text:
             return
         
-        # Verificar se já há uma seleção
         cursor = self.text_area.textCursor()
         
-        # Se há seleção e é igual ao texto procurado, avançar o cursor
         if cursor.hasSelection() and cursor.selectedText() == self.search_text:
             cursor.movePosition(QTextCursor.NextCharacter)
             self.text_area.setTextCursor(cursor)
         
-        # Procurar próxima ocorrência
         found = self.text_area.find(self.search_text)
         
         if not found:
-            # Voltar ao início
             cursor.movePosition(QTextCursor.Start)
             self.text_area.setTextCursor(cursor)
             found = self.text_area.find(self.search_text)
@@ -726,11 +995,9 @@ Divirta-se! 🎉
         if not self.search_text:
             return
         
-        # Procurar ocorrência anterior
         found = self.text_area.find(self.search_text, QTextDocument.FindBackward)
         
         if not found:
-            # Ir ao final
             cursor = self.text_area.textCursor()
             cursor.movePosition(QTextCursor.End)
             self.text_area.setTextCursor(cursor)
@@ -751,19 +1018,13 @@ Divirta-se! 🎉
         
         cursor = self.text_area.textCursor()
         
-        # Verificar se há uma seleção e se é igual ao texto procurado
         if cursor.hasSelection() and cursor.selectedText() == self.search_text:
-            # Substituir o texto selecionado
             cursor.insertText(self.replace_input.text())
             self.is_modified = True
             self.update_window_title()
-            
-            # Procurar próxima ocorrência
             self.find_next()
         else:
-            # Se não há seleção válida, procurar a próxima
             if self.find_next():
-                # Se encontrou, chama novamente para substituir
                 self.replace_current()
     
     def replace_all(self):
@@ -771,29 +1032,22 @@ Divirta-se! 🎉
         if not self.search_text:
             return
         
-        # Salvar posição atual do cursor
         original_cursor = self.text_area.textCursor()
-        
-        # Iniciar bloco de edição para poder desfazer todas as substituições de uma vez
         cursor = self.text_area.textCursor()
         cursor.beginEditBlock()
         
-        # Ir para o início do documento
         cursor.movePosition(QTextCursor.Start)
         self.text_area.setTextCursor(cursor)
         
         count = 0
         replace_text = self.replace_input.text()
         
-        # Substituir todas as ocorrências
         while self.text_area.find(self.search_text):
             cursor = self.text_area.textCursor()
             cursor.insertText(replace_text)
             count += 1
         
         cursor.endEditBlock()
-        
-        # Restaurar cursor original
         self.text_area.setTextCursor(original_cursor)
         
         if count > 0:
@@ -849,15 +1103,23 @@ Divirta-se! 🎉
     
     def show_about(self):
         """Mostrar diálogo sobre"""
-        about_text = """
+        crypto_status = "✅ Disponível" if CRYPTO_AVAILABLE else "❌ Não disponível (instale cryptography)"
+        
+        about_text = f"""
         <h2>Editor Simples</h2>
-        <p><b>Versão:</b> 1.0.0</p>
-        <p>Um editor de texto simples que salva em formato JSON.</p>
+        <p><b>Versão:</b> 2.0.0</p>
+        <p>Um editor de texto que salva em formato JSON com suporte a criptografia.</p>
+        
+        <h3>🔒 Criptografia:</h3>
+        <p><b>Status:</b> {crypto_status}</p>
+        <p><b>Algoritmo:</b> AES-256 (Fernet)</p>
+        <p><b>Derivação de chave:</b> PBKDF2-HMAC-SHA256</p>
         
         <h3>Funcionalidades:</h3>
         <ul>
             <li>Salvar arquivos em JSON com metadados</li>
-            <li>Abrir arquivos existentes</li>
+            <li>Criptografia por senha (AES-256)</li>
+            <li>Abrir arquivos criptografados e não criptografados</li>
             <li>Localizar e substituir texto</li>
             <li>Contador de caracteres, palavras e linhas</li>
             <li>Zoom ajustável</li>
@@ -869,6 +1131,7 @@ Divirta-se! 🎉
             <li>Ctrl+N: Novo arquivo</li>
             <li>Ctrl+O: Abrir</li>
             <li>Ctrl+S: Salvar</li>
+            <li>Ctrl+E: Salvar Criptografado</li>
             <li>Ctrl+F: Localizar</li>
             <li>Ctrl+H: Substituir</li>
             <li>Ctrl+Z: Desfazer</li>
@@ -896,7 +1159,7 @@ class StartupDialog(QDialog):
         layout = QVBoxLayout()
         
         # Título
-        title = QLabel("📝 EDITOR SIMPLES")
+        title = QLabel("📝 EDITOR SIMPLES\ncom Criptografia 🔒")
         title.setStyleSheet("""
             font-size: 24px;
             font-weight: bold;
@@ -948,6 +1211,12 @@ class StartupDialog(QDialog):
         btn_open.clicked.connect(self.open_file)
         options_layout.addWidget(btn_open)
         
+        if not CRYPTO_AVAILABLE:
+            warning = QLabel("⚠️ Funcionalidade de criptografia não disponível.\nInstale: pip install cryptography")
+            warning.setStyleSheet("color: orange; padding: 10px;")
+            warning.setAlignment(Qt.AlignCenter)
+            options_layout.addWidget(warning)
+        
         layout.addWidget(options)
         
         # Botão sair
@@ -981,6 +1250,12 @@ class StartupDialog(QDialog):
 def main():
     app = QApplication(sys.argv)
     app.setApplicationName("Editor Simples")
+    
+    if not CRYPTO_AVAILABLE:
+        QMessageBox.warning(None, "Aviso", 
+                          "Biblioteca 'cryptography' não instalada.\n"
+                          "A funcionalidade de criptografia estará desabilitada.\n\n"
+                          "Para instalar: pip install cryptography")
     
     # Diálogo inicial
     dialog = StartupDialog()
