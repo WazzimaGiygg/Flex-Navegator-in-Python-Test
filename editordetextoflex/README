@@ -73,3 +73,16 @@ Vetores de Evolução Futura:
 3. Encriptação de Ficheiros JSON: Integração de bibliotecas criptográficas para proteger metadados sensíveis que, pela natureza do formato JSON, ficariam expostos em texto simples.
 
 Este documento estabelece as diretrizes para a operação e futura expansão do NotepadFlex, uma ferramenta desenhada por engenheiros para utilizadores que exigem estrutura e fiabilidade na gestão de dados textuais.
+
+O **Editor Simples** (também referido como **NotepadFlex** ou **FlexNotepad** nas fontes) realmente oferece as funcionalidades de um editor de texto convencional, mas com o diferencial de utilizar o formato **JSON** como base e oferecer camadas extras de segurança.
+
+Aqui estão os detalhes sobre como essas funcionalidades operam de acordo com as fontes:
+
+*   **Funcionalidades de Notepad:** O aplicativo carrega recursos essenciais como Recortar, Copiar, Colar, Selecionar Tudo, Desfazer/Refazer, além de busca e substituição de texto. Ele também permite ajustar o zoom e ativar a quebra de linha automática.
+*   **Exportação e Formatos:** Ao contrário de um editor comum que usa apenas `.txt`, este salva os arquivos nativamente em formato **JSON**. No entanto, ele possui a opção específica de **"Exportar como TXT..."** no menu Arquivo, permitindo gerar arquivos de texto simples a partir do conteúdo editado.
+*   **Salvamento com Criptografia:** O aplicativo oferece a funcionalidade de **"Salvar Criptografado..."** (acessível pelo atalho **Ctrl+E**). Essa função utiliza criptografia por senha no padrão **AES-256**. 
+    *   Para proteger o arquivo, o usuário deve definir e confirmar uma senha.
+    *   O arquivo resultante mantém a extensão `.json`, mas seu conteúdo fica inacessível sem a senha correta, que é solicitada obrigatoriamente no momento da abertura.
+*   **Metadados no JSON:** Quando o texto é salvo em JSON (criptografado ou não), o arquivo armazena informações adicionais (metadados), incluindo as datas de criação e modificação, contagem de caracteres, palavras e linhas, e a indicação se o conteúdo está criptografado.
+
+O sistema é construído utilizando a linguagem Python com a biblioteca **PyQt5** para a interface e a biblioteca **cryptography** para garantir a segurança dos dados.
