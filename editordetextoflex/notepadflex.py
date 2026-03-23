@@ -68,6 +68,42 @@ class SimpleTextEditor(QMainWindow):
         
         # Mostrar boas-vindas
         self.show_welcome()
+        
+        # Carregar plugin padrão (Google Search)
+        self.load_default_plugin()
+    
+    def load_default_plugin(self):
+        """Carrega o plugin de busca do Google automaticamente"""
+        google_plugin_html = """<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Busca Personalizada</title>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; padding-top: 50px; }
+        .search-box { display: flex; gap: 10px; }
+        input[type="text"] { padding: 10px; width: 300px; border: 1px solid #ccc; border-radius: 4px; }
+        button { padding: 10px 20px; background-color: #4285f4; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #357ae8; }
+    </style>
+</head>
+<body>
+
+    <form action="https://www.google.com/search" method="GET" class="search-box">
+        <input type="text" name="q" placeholder="Pesquisar no Google..." required>
+        <button type="submit">Buscar</button>
+    </form>
+
+</body>
+</html>"""
+        
+        # Criar e adicionar o plugin
+        plugin = HTMLPlugin("🔍 Busca Google", google_plugin_html, "Pesquise diretamente no Google")
+        self.plugins["🔍 Busca Google"] = plugin
+        self.add_plugin_to_interface(plugin)
+        
+        self.update_plugins_label()
+        self.status_bar.showMessage("Plugin de Busca Google carregado automaticamente!", 3000)
     
     def init_ui(self):
         """Inicializar interface do usuário"""
@@ -345,7 +381,7 @@ class SimpleTextEditor(QMainWindow):
         
         self.toolbar.addSeparator()
         
-        # CORREÇÃO: Botão para adicionar plugin - criando QAction corretamente
+        # Botão para adicionar plugin
         btn_plugin = QAction(self)
         btn_plugin.setText("🔌 Adicionar Plugin")
         btn_plugin.setStatusTip("Adicionar plugin HTML")
@@ -440,7 +476,7 @@ class SimpleTextEditor(QMainWindow):
         
         self.plugin_dock.setWidget(self.plugin_tab_widget)
         self.addDockWidget(Qt.RightDockWidgetArea, self.plugin_dock)
-        self.plugin_dock.hide()
+        self.plugin_dock.show()  # Mostrar o dock pois já temos um plugin padrão
         
         # ========== BARRA DE STATUS ==========
         self.status_bar = self.statusBar()
@@ -581,13 +617,15 @@ Este é um editor de texto que salva arquivos em formato JSON com suporte a crip
 - ✅ Criptografia por senha (AES-256)
 - ✅ Abrir arquivos criptografados e não criptografados
 - ✅ **🔌 Suporte a plugins HTML** (adicione ferramentas auxiliares)
+- ✅ **🔍 Plugin de Busca Google incluso automaticamente!**
 - ✅ Localizar e substituir texto
 - ✅ Desfazer/Refazer
 - ✅ Quebra de linha
 - ✅ Zoom ajustável
 
 ### 🔌 Como usar plugins HTML:
-- Use **Ctrl+P** ou menu Arquivo > Importar > "Adicionar Plugin HTML..."
+- O plugin de busca do Google já está carregado no painel lateral!
+- Use **Ctrl+P** ou menu Arquivo > Importar > "Adicionar Plugin HTML..." para adicionar mais plugins
 - Cole o código HTML de uma ferramenta auxiliar
 - O plugin aparecerá no painel lateral
 - Você pode adicionar vários plugins e alternar entre eles
@@ -681,11 +719,6 @@ Exemplo de plugin HTML:
         """.strip())
         layout.addWidget(html_edit)
         
-        # Exemplo de plugin
-        btn_example = QPushButton("Carregar Exemplo (Calculadora)")
-        btn_example.clicked.connect(lambda: self.load_example_plugin(html_edit))
-        layout.addWidget(btn_example)
-        
         # Botões
         button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         button_box.accepted.connect(dialog.accept)
@@ -714,211 +747,6 @@ Exemplo de plugin HTML:
             
             self.update_plugins_label()
             self.status_bar.showMessage(f"Plugin '{name}' adicionado com sucesso!", 3000)
-    
-    def load_example_plugin(self, html_edit):
-        """Carregar um exemplo de plugin (calculadora)"""
-        example_html = """<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 20px;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .calculator {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            padding: 20px;
-            width: 100%;
-            max-width: 320px;
-        }
-        
-        .display {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-            text-align: right;
-            font-size: 2em;
-            font-weight: bold;
-            color: #333;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
-            min-height: 80px;
-            word-wrap: break-word;
-        }
-        
-        .buttons {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-        }
-        
-        button {
-            padding: 20px;
-            font-size: 1.2em;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: bold;
-        }
-        
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-        
-        .number {
-            background: #e9ecef;
-            color: #495057;
-        }
-        
-        .number:hover {
-            background: #dee2e6;
-        }
-        
-        .operator {
-            background: #ff6b6b;
-            color: white;
-        }
-        
-        .operator:hover {
-            background: #ff5252;
-        }
-        
-        .equal {
-            background: #51cf66;
-            color: white;
-            grid-column: span 2;
-        }
-        
-        .equal:hover {
-            background: #40c057;
-        }
-        
-        .clear {
-            background: #ff8787;
-            color: white;
-        }
-        
-        .clear:hover {
-            background: #ff6b6b;
-        }
-        
-        .title {
-            text-align: center;
-            margin-bottom: 15px;
-            color: white;
-            font-size: 0.9em;
-        }
-        
-        @media (max-width: 400px) {
-            button {
-                padding: 15px;
-                font-size: 1em;
-            }
-            .display {
-                font-size: 1.5em;
-                padding: 15px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div style="width: 100%;">
-        <div class="title">🧮 Calculadora FlexNotepad</div>
-        <div class="calculator">
-            <div class="display" id="display">0</div>
-            <div class="buttons">
-                <button class="clear" onclick="clearDisplay()">C</button>
-                <button class="operator" onclick="appendOperator('/')">÷</button>
-                <button class="operator" onclick="appendOperator('*')">×</button>
-                <button class="operator" onclick="appendOperator('-')">-</button>
-                
-                <button class="number" onclick="appendNumber('7')">7</button>
-                <button class="number" onclick="appendNumber('8')">8</button>
-                <button class="number" onclick="appendNumber('9')">9</button>
-                <button class="operator" onclick="appendOperator('+')">+</button>
-                
-                <button class="number" onclick="appendNumber('4')">4</button>
-                <button class="number" onclick="appendNumber('5')">5</button>
-                <button class="number" onclick="appendNumber('6')">6</button>
-                <button class="equal" onclick="calculate()">=</button>
-                
-                <button class="number" onclick="appendNumber('1')">1</button>
-                <button class="number" onclick="appendNumber('2')">2</button>
-                <button class="number" onclick="appendNumber('3')">3</button>
-                
-                <button class="number" onclick="appendNumber('0')">0</button>
-                <button class="number" onclick="appendNumber('.')">.</button>
-                <button class="operator" onclick="backspace()">⌫</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        let display = document.getElementById('display');
-        let currentInput = '';
-        
-        function updateDisplay() {
-            display.textContent = currentInput || '0';
-        }
-        
-        function appendNumber(num) {
-            currentInput += num;
-            updateDisplay();
-        }
-        
-        function appendOperator(op) {
-            if (currentInput && !isNaN(currentInput[currentInput.length - 1])) {
-                currentInput += op;
-                updateDisplay();
-            }
-        }
-        
-        function calculate() {
-            try {
-                let expression = currentInput.replace(/×/g, '*').replace(/÷/g, '/');
-                let result = eval(expression);
-                currentInput = result.toString();
-                updateDisplay();
-            } catch(e) {
-                currentInput = 'Erro';
-                updateDisplay();
-                setTimeout(() => {
-                    currentInput = '';
-                    updateDisplay();
-                }, 1000);
-            }
-        }
-        
-        function clearDisplay() {
-            currentInput = '';
-            updateDisplay();
-        }
-        
-        function backspace() {
-            currentInput = currentInput.slice(0, -1);
-            updateDisplay();
-        }
-    </script>
-</body>
-</html>"""
-        html_edit.setPlainText(example_html)
     
     def add_plugin_to_interface(self, plugin):
         """Adicionar plugin à interface"""
@@ -1719,6 +1547,7 @@ Exemplo de plugin HTML:
         <h3>🔌 Plugins:</h3>
         <p>Adicione ferramentas HTML auxiliares para ajudar no editor!</p>
         <p>Exemplos: calculadoras, conversores, geradores de código, etc.</p>
+        <p><b>Plugin padrão:</b> 🔍 Busca Google - Pesquise diretamente sem sair do editor!</p>
         
         <h3>🔒 Criptografia:</h3>
         <p><b>Status:</b> {crypto_status}</p>
@@ -1730,6 +1559,7 @@ Exemplo de plugin HTML:
             <li>Salvar arquivos em JSON com metadados</li>
             <li>Criptografia por senha (AES-256)</li>
             <li><b>Plugins HTML personalizáveis</b></li>
+            <li><b>Plugin de Busca Google incluso automaticamente</b></li>
             <li>Abrir arquivos criptografados e não criptografados</li>
             <li>Localizar e substituir texto</li>
             <li>Contador de caracteres, palavras e linhas</li>
@@ -1771,7 +1601,7 @@ class StartupDialog(QDialog):
         layout = QVBoxLayout()
         
         # Título
-        title = QLabel("📝 EDITOR SIMPLES\ncom Criptografia 🔒 e Plugins 🔌")
+        title = QLabel("📝 FLEXNOTEPAD\ncom Criptografia 🔒 e Plugins 🔌")
         title.setStyleSheet("""
             font-size: 24px;
             font-weight: bold;
