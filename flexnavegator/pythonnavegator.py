@@ -8,16 +8,375 @@ from PyQt5.QtWebEngineWidgets import *
 from PyQt5.QtGui import *
 from urllib.parse import quote
 
+class ConsoleWindow(QDialog):
+    """Janela do console JavaScript"""
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.parent = parent
+        self.setWindowTitle("Console JavaScript - Python Navigator")
+        self.setGeometry(300, 300, 800, 500)
+        
+        layout = QVBoxLayout()
+        
+        # Filtros
+        filter_layout = QHBoxLayout()
+        filter_layout.addWidget(QLabel("Filtrar:"))
+        
+        self.filter_input = QLineEdit()
+        self.filter_input.setPlaceholderText("Digite para filtrar mensagens...")
+        self.filter_input.textChanged.connect(self.filtrar_mensagens)
+        filter_layout.addWidget(self.filter_input)
+        
+        self.btn_clear = QPushButton("Limpar")
+        self.btn_clear.clicked.connect(self.limpar_console)
+        filter_layout.addWidget(self.btn_clear)
+        
+        self.btn_close = QPushButton("Fechar")
+        self.btn_close.clicked.connect(self.accept)
+        filter_layout.addWidget(self.btn_close)
+        
+        layout.addLayout(filter_layout)
+        
+        # Lista de mensagens
+        self.messages_list = QListWidget()
+        self.messages_list.setFont(QFont("Courier New", 9))
+        layout.addWidget(self.messages_list)
+        
+        self.setLayout(layout)
+        
+        self.all_messages = []
+    
+    def adicionar_mensagem(self, mensagem, tipo="info"):
+        """Adicionar mensagem ao console"""
+        timestamp = datetime.now().strftime("%H:%M:%S")
+        
+        # Definir cor baseada no tipo
+        cor = {
+            "info": "blue",
+            "warning": "orange",
+            "error": "red",
+            "deprecation": "purple"
+        }.get(tipo, "black")
+        
+        item_text = f"[{timestamp}] [{tipo.upper()}] {mensagem}"
+        self.all_messages.append((item_text, tipo))
+        
+        if self.filtrar_mensagens_por_texto(item_text):
+            item = QListWidgetItem(item_text)
+            item.setForeground(QColor(cor))
+            self.messages_list.addItem(item)
+            self.messages_list.scrollToBottom()
+    
+    def filtrar_mensagens(self):
+        """Filtrar mensagens baseado no texto"""
+        texto_filtro = self.filter_input.text().lower()
+        self.messages_list.clear()
+        
+        for item_text, tipo in self.all_messages:
+            if texto_filtro in item_text.lower():
+                item = QListWidgetItem(item_text)
+                cor = {
+                    "info": "blue",
+                    "warning": "orange",
+                    "error": "red",
+                    "deprecation": "purple"
+                }.get(tipo, "black")
+                item.setForeground(QColor(cor))
+                self.messages_list.addItem(item)
+    
+    def filtrar_mensagens_por_texto(self, texto):
+        """Verificar se a mensagem deve ser exibida baseado no filtro atual"""
+        texto_filtro = self.filter_input.text().lower()
+        if not texto_filtro:
+            return True
+        return texto_filtro in texto.lower()
+    
+    def limpar_console(self):
+        """Limpar todas as mensagens do console"""
+        self.all_messages.clear()
+        self.messages_list.clear()
+
+class VisualizadorCodigoFonte(QDialog):
+    """Janela para visualizar código fonte HTML"""
+    def __init__(self, parent=None, url="", html="", titulo=""):
+        super().__init__(parent)
+        self.parent = parent
+        self.url = url
+        self.html_original = html
+        self.titulo = titulo
+        
+        self.setWindowTitle(f"Visualizador de Código Fonte - {titulo[:50]} - Python Navigator")
+        self.setGeometry(200, 200, 900, 700)
+        
+        layout = QVBoxLayout()
+        
+        # Barra de informações
+        info_frame = QFrame()
+        info_frame.setStyleSheet("""
+            QFrame {
+                background-color: #f0f0f0;
+                border: 1px solid #ccc;
+                border-radius: 3px;
+                padding: 5px;
+            }
+        """)
+        info_layout = QHBoxLayout()
+        
+        self.url_label = QLabel(f"<b>URL:</b> {url}")
+        self.url_label.setWordWrap(True)
+        info_layout.addWidget(self.url_label, 1)
+        
+        info_frame.setLayout(info_layout)
+        layout.addWidget(info_frame)
+        
+        # Editor de código fonte
+        self.text_edit = QTextEdit()
+        self.text_edit.setPlainText(html)
+        self.text_edit.setFont(QFont("Courier New", 10))
+        
+        # Configurar syntax highlighting básico
+        self.highlighter = SyntaxHighlighter(self.text_edit.document())
+        
+        layout.addWidget(self.text_edit, 1)
+        
+        # Barra de busca
+        search_frame = QFrame()
+        search_layout = QHBoxLayout()
+        search_layout.addWidget(QLabel("Buscar:"))
+        
+        self.search_input = QLineEdit()
+        self.search_input.setPlaceholderText("Digite texto para buscar...")
+        self.search_input.textChanged.connect(self.buscar_texto)
+        search_layout.addWidget(self.search_input)
+        
+        self.btn_search_next = QPushButton("Próximo")
+        self.btn_search_next.clicked.connect(lambda: self.buscar_texto_direcao(1))
+        search_layout.addWidget(self.btn_search_next)
+        
+        self.btn_search_prev = QPushButton("Anterior")
+        self.btn_search_prev.clicked.connect(lambda: self.buscar_texto_direcao(-1))
+        search_layout.addWidget(self.btn_search_prev)
+        
+        self.search_count_label = QLabel("0/0")
+        search_layout.addWidget(self.search_count_label)
+        
+        search_frame.setLayout(search_layout)
+        layout.addWidget(search_frame)
+        
+        # Botões de ação
+        buttons_layout = QHBoxLayout()
+        
+        self.btn_copy = QPushButton("📋 Copiar")
+        self.btn_copy.clicked.connect(self.copiar_codigo)
+        buttons_layout.addWidget(self.btn_copy)
+        
+        self.btn_save = QPushButton("💾 Salvar como...")
+        self.btn_save.clicked.connect(self.salvar_codigo)
+        buttons_layout.addWidget(self.btn_save)
+        
+        self.btn_refresh = QPushButton("⟳ Atualizar")
+        self.btn_refresh.clicked.connect(self.atualizar_codigo)
+        buttons_layout.addWidget(self.btn_refresh)
+        
+        self.btn_word_wrap = QPushButton("📝 Quebra de linha")
+        self.btn_word_wrap.setCheckable(True)
+        self.btn_word_wrap.toggled.connect(self.toggle_word_wrap)
+        buttons_layout.addWidget(self.btn_word_wrap)
+        
+        buttons_layout.addStretch()
+        
+        self.btn_close = QPushButton("Fechar")
+        self.btn_close.clicked.connect(self.accept)
+        buttons_layout.addWidget(self.btn_close)
+        
+        layout.addLayout(buttons_layout)
+        
+        self.setLayout(layout)
+        
+        # Variáveis para busca
+        self.search_positions = []
+        self.current_search_index = -1
+        
+        # Barra de status do visualizador
+        self.status_label = QLabel("Pronto")
+        layout.addWidget(self.status_label)
+    
+    def buscar_texto(self):
+        """Buscar texto no código fonte"""
+        texto_busca = self.search_input.text()
+        if not texto_busca:
+            self.search_positions = []
+            self.current_search_index = -1
+            self.search_count_label.setText("0/0")
+            # Remover destaque
+            cursor = self.text_edit.textCursor()
+            cursor.clearSelection()
+            self.text_edit.setTextCursor(cursor)
+            return
+        
+        # Encontrar todas as ocorrências
+        self.search_positions = []
+        cursor = self.text_edit.textCursor()
+        cursor.movePosition(QTextCursor.Start)
+        
+        while True:
+            cursor = self.text_edit.document().find(texto_busca, cursor)
+            if cursor.isNull():
+                break
+            self.search_positions.append(cursor.position())
+            cursor.movePosition(QTextCursor.NextCharacter)
+        
+        if self.search_positions:
+            self.current_search_index = 0
+            self.search_count_label.setText(f"1/{len(self.search_positions)}")
+            self.destacar_busca(0)
+        else:
+            self.current_search_index = -1
+            self.search_count_label.setText("0/0")
+            QMessageBox.information(self, "Busca", f"Nenhum resultado encontrado para '{texto_busca}'")
+    
+    def buscar_texto_direcao(self, direcao):
+        """Buscar texto na direção especificada"""
+        if not self.search_positions:
+            return
+        
+        self.current_search_index += direcao
+        if self.current_search_index >= len(self.search_positions):
+            self.current_search_index = 0
+        elif self.current_search_index < 0:
+            self.current_search_index = len(self.search_positions) - 1
+        
+        self.destacar_busca(self.current_search_index)
+        self.search_count_label.setText(f"{self.current_search_index + 1}/{len(self.search_positions)}")
+    
+    def destacar_busca(self, index):
+        """Destacar a ocorrência da busca"""
+        if index < 0 or index >= len(self.search_positions):
+            return
+        
+        cursor = self.text_edit.textCursor()
+        cursor.setPosition(self.search_positions[index])
+        cursor.movePosition(QTextCursor.Right, QTextCursor.KeepAnchor, len(self.search_input.text()))
+        self.text_edit.setTextCursor(cursor)
+        self.text_edit.ensureCursorVisible()
+    
+    def copiar_codigo(self):
+        """Copiar código fonte para área de transferência"""
+        clipboard = QApplication.clipboard()
+        clipboard.setText(self.text_edit.toPlainText())
+        QMessageBox.information(self, "Copiar", "Código fonte copiado para a área de transferência!")
+    
+    def salvar_codigo(self):
+        """Salvar código fonte em arquivo"""
+        file_path, _ = QFileDialog.getSaveFileName(
+            self,
+            "Salvar código fonte",
+            f"{self.titulo[:30].replace(' ', '_')}.html",
+            "Arquivos HTML (*.html);;Arquivos de texto (*.txt);;Todos os arquivos (*.*)"
+        )
+        
+        if file_path:
+            try:
+                with open(file_path, "w", encoding="utf-8") as f:
+                    f.write(self.text_edit.toPlainText())
+                QMessageBox.information(self, "Sucesso", f"Código fonte salvo em:\n{file_path}")
+            except Exception as e:
+                QMessageBox.critical(self, "Erro", f"Erro ao salvar arquivo: {e}")
+    
+    def atualizar_codigo(self):
+        """Atualizar código fonte da página atual"""
+        web_view = self.parent.get_current_web_view()
+        if web_view:
+            self.status_label.setText("Atualizando código fonte...")
+            web_view.page().toHtml(self.on_html_loaded)
+    
+    def on_html_loaded(self, html):
+        """Callback quando o HTML é carregado"""
+        self.text_edit.setPlainText(html)
+        self.html_original = html
+        self.search_positions = []
+        self.search_input.clear()
+        self.status_label.setText("Código fonte atualizado com sucesso!")
+        QMessageBox.information(self, "Atualizado", "Código fonte atualizado com sucesso!")
+    
+    def toggle_word_wrap(self, checked):
+        """Alternar quebra de linha"""
+        if checked:
+            self.text_edit.setLineWrapMode(QTextEdit.WidgetWidth)
+        else:
+            self.text_edit.setLineWrapMode(QTextEdit.NoWrap)
+
+class SyntaxHighlighter(QSyntaxHighlighter):
+    """Realce de sintaxe para HTML/CSS/JS"""
+    def __init__(self, document):
+        super().__init__(document)
+        
+        # Regras para HTML tags
+        self.rules = []
+        
+        # Tags HTML
+        tag_format = QTextCharFormat()
+        tag_format.setForeground(QColor(0, 0, 255))
+        tag_format.setFontWeight(QFont.Bold)
+        self.rules.append((QRegExp("<[^>]+>"), tag_format))
+        
+        # Atributos HTML
+        attr_format = QTextCharFormat()
+        attr_format.setForeground(QColor(128, 0, 128))
+        self.rules.append((QRegExp("\\b\\w+=\\s*[\"'][^\"']*[\"']"), attr_format))
+        
+        # Comentários HTML
+        comment_format = QTextCharFormat()
+        comment_format.setForeground(QColor(0, 128, 0))
+        comment_format.setFontItalic(True)
+        self.rules.append((QRegExp("<!--[^>]*-->"), comment_format))
+        
+        # Strings
+        string_format = QTextCharFormat()
+        string_format.setForeground(QColor(255, 0, 0))
+        self.rules.append((QRegExp("[\"'][^\"']*[\"']"), string_format))
+        
+        # CSS dentro de style
+        css_format = QTextCharFormat()
+        css_format.setForeground(QColor(0, 128, 128))
+        self.rules.append((QRegExp("style\\s*=\\s*[\"'][^\"']*[\"']"), css_format))
+        
+        # JavaScript dentro de script
+        js_format = QTextCharFormat()
+        js_format.setForeground(QColor(255, 128, 0))
+        self.rules.append((QRegExp("script\\s*=\\s*[\"'][^\"']*[\"']"), js_format))
+    
+    def highlightBlock(self, text):
+        """Aplicar realce de sintaxe ao bloco de texto"""
+        for pattern, format in self.rules:
+            expression = QRegExp(pattern)
+            index = expression.indexIn(text)
+            while index >= 0:
+                length = expression.matchedLength()
+                self.setFormat(index, length, format)
+                index = expression.indexIn(text, index + length)
+
 class ConfiguracoesWindow(QDialog):
     """Janela de configurações"""
     def __init__(self, parent=None):
         super().__init__(parent)
         self.parent = parent
-        self.setWindowTitle("Configurações")
-        self.setGeometry(200, 200, 450, 400)
+        self.setWindowTitle("Configurações - Python Navigator")
+        self.setGeometry(200, 200, 450, 550)
         self.setModal(True)
         
         layout = QVBoxLayout()
+        
+        # Informações do navegador
+        group_info = QGroupBox("Sobre o Python Navigator")
+        info_layout = QVBoxLayout()
+        info_label = QLabel("""<b>Python Navigator 1.0.1</b><br>
+        Navegador web desenvolvido em Python com PyQt5<br>
+        Identificador: PythonNavigator/1.0.1""")
+        info_label.setWordWrap(True)
+        info_layout.addWidget(info_label)
+        group_info.setLayout(info_layout)
+        layout.addWidget(group_info)
         
         # Página inicial
         group_home = QGroupBox("Página inicial")
@@ -38,6 +397,39 @@ class ConfiguracoesWindow(QDialog):
         search_layout.addWidget(self.search_engine)
         group_search.setLayout(search_layout)
         layout.addWidget(group_search)
+        
+        # Configurações de JavaScript
+        group_js = QGroupBox("JavaScript")
+        js_layout = QVBoxLayout()
+        
+        self.js_enabled = QCheckBox("Habilitar JavaScript")
+        self.js_enabled.setChecked(parent.javascript_enabled)
+        self.js_enabled.toggled.connect(self.on_js_toggled)
+        js_layout.addWidget(self.js_enabled)
+        
+        self.js_info = QLabel("O JavaScript é necessário para a maioria dos sites modernos.\nDesativar pode melhorar a segurança e velocidade,\nmas muitos sites podem não funcionar corretamente.")
+        self.js_info.setWordWrap(True)
+        self.js_info.setStyleSheet("color: #666; font-size: 10px;")
+        js_layout.addWidget(self.js_info)
+        
+        group_js.setLayout(js_layout)
+        layout.addWidget(group_js)
+        
+        # Configurações do Console
+        group_console = QGroupBox("Console JavaScript")
+        console_layout = QVBoxLayout()
+        
+        self.console_enabled = QCheckBox("Habilitar console JavaScript")
+        self.console_enabled.setChecked(parent.console_enabled)
+        console_layout.addWidget(self.console_enabled)
+        
+        self.console_info = QLabel("Mostra mensagens de erro, avisos e depuração do JavaScript.")
+        self.console_info.setWordWrap(True)
+        self.console_info.setStyleSheet("color: #666; font-size: 10px;")
+        console_layout.addWidget(self.console_info)
+        
+        group_console.setLayout(console_layout)
+        layout.addWidget(group_console)
         
         # Skins/Temas
         group_skin = QGroupBox("Aparência (Skin)")
@@ -74,6 +466,15 @@ class ConfiguracoesWindow(QDialog):
         
         # Carregar configurações salvas
         self.load_config()
+    
+    def on_js_toggled(self, enabled):
+        """Quando o JavaScript é ativado/desativado"""
+        if not enabled:
+            reply = QMessageBox.question(self, "Confirmar", 
+                                         "Desativar o JavaScript pode fazer com que muitos sites não funcionem corretamente.\nDeseja continuar?",
+                                         QMessageBox.Yes | QMessageBox.No)
+            if reply == QMessageBox.No:
+                self.js_enabled.setChecked(True)
     
     def carregar_skins_disponiveis(self):
         """Carregar lista de skins disponíveis"""
@@ -291,6 +692,14 @@ QLabel {
                     if index >= 0:
                         self.search_engine.setCurrentIndex(index)
                     
+                    # Carregar configuração de JavaScript
+                    js_enabled = config.get("javascript_enabled", True)
+                    self.js_enabled.setChecked(js_enabled)
+                    
+                    # Carregar configuração do console
+                    console_enabled = config.get("console_enabled", True)
+                    self.console_enabled.setChecked(console_enabled)
+                    
                     # Carregar skin salva
                     skin = config.get("skin", "Padrão (Claro)")
                     index = self.skin_combo.findText(skin)
@@ -306,6 +715,8 @@ QLabel {
             config = {
                 "home_page": self.home_page_edit.text(),
                 "search_engine": self.search_engine.currentText(),
+                "javascript_enabled": self.js_enabled.isChecked(),
+                "console_enabled": self.console_enabled.isChecked(),
                 "skin": self.skin_combo.currentText()
             }
             with open("config.json", "w", encoding="utf-8") as f:
@@ -313,6 +724,9 @@ QLabel {
             
             # Atualizar configurações no navegador
             self.parent.home_page = self.home_page_edit.text()
+            self.parent.javascript_enabled = self.js_enabled.isChecked()
+            self.parent.console_enabled = self.console_enabled.isChecked()
+            self.parent.aplicar_configuracoes_javascript()
             self.parent.aplicar_skin(self.skin_combo.currentText())
             
             QMessageBox.information(self, "Sucesso", "Configurações salvas com sucesso!")
@@ -325,7 +739,7 @@ class HistoricoWindow(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.parent = parent
-        self.setWindowTitle("Histórico")
+        self.setWindowTitle("Histórico - Python Navigator")
         self.setGeometry(300, 300, 600, 400)
         
         layout = QVBoxLayout()
@@ -392,36 +806,54 @@ class SobreWindow(QDialog):
     """Janela Sobre"""
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("Sobre")
-        self.setGeometry(400, 400, 400, 300)
+        self.setWindowTitle("Sobre - Python Navigator")
+        self.setGeometry(400, 400, 500, 440)
         
         layout = QVBoxLayout()
         
         # Logo e informações
-        label_title = QLabel("<h1>Navegador Web</h1>")
+        label_title = QLabel("<h1>🐍 Python Navigator</h1>")
         label_title.setAlignment(Qt.AlignCenter)
         layout.addWidget(label_title)
         
-        label_version = QLabel("<b>Versão:</b> 1.0.0")
+        label_version = QLabel("<b>Versão:</b> 1.0.1")
         label_version.setAlignment(Qt.AlignCenter)
         layout.addWidget(label_version)
+        
+        label_id = QLabel("<b>Identificador:</b> PythonNavigator/1.0.1")
+        label_id.setAlignment(Qt.AlignCenter)
+        layout.addWidget(label_id)
+        
+        layout.addWidget(QLabel(""))
         
         label_desc = QLabel("Navegador web desenvolvido em Python com PyQt5")
         label_desc.setAlignment(Qt.AlignCenter)
         label_desc.setWordWrap(True)
         layout.addWidget(label_desc)
         
+        layout.addWidget(QLabel(""))
+        
         label_features = QLabel("""<b>Funcionalidades:</b><br>
         • Múltiplas abas<br>
         • Histórico de navegação<br>
+        • Visualizador de código fonte<br>
+        • Console JavaScript<br>
         • Configurações personalizáveis<br>
         • Sistema de skins/temas<br>
+        • JavaScript configurável<br>
         • Atalhos de teclado<br>
         • Abrir arquivos HTML locais<br>
-        • Motor de busca personalizável""")
+        • Motor de busca personalizável<br>
+        • User Agent personalizado""")
         label_features.setAlignment(Qt.AlignLeft)
         label_features.setWordWrap(True)
         layout.addWidget(label_features)
+        
+        layout.addWidget(QLabel(""))
+        
+        label_credit = QLabel("<i>© 2024 - Python Navigator Team</i>")
+        label_credit.setAlignment(Qt.AlignCenter)
+        layout.addWidget(label_credit)
         
         btn_close = QPushButton("Fechar")
         btn_close.clicked.connect(self.accept)
@@ -432,7 +864,7 @@ class SobreWindow(QDialog):
 class NavegadorWeb(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Navegador Web")
+        self.setWindowTitle("Python Navigator 1.0.1")
         self.setGeometry(100, 100, 1200, 800)
         
         # Configurar página inicial padrão
@@ -443,11 +875,23 @@ class NavegadorWeb(QMainWindow):
             "DuckDuckGo": "https://duckduckgo.com/?q={}"
         }
         
+        # Identificador do navegador
+        self.browser_name = "PythonNavigator"
+        self.browser_version = "1.0.1"
+        self.user_agent = f"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) {self.browser_name}/{self.browser_version} Chrome/120.0.0.0 Safari/537.36"
+        
+        # Configurações
+        self.javascript_enabled = True
+        self.console_enabled = True
+        
         # Skin atual
         self.current_skin = "Padrão (Claro)"
         
         # Dicionário para mapear abas para seus web views
         self.web_views = {}
+        
+        # Console JavaScript
+        self.console_window = None
         
         # Carregar configurações salvas
         self.carregar_configuracoes()
@@ -457,8 +901,41 @@ class NavegadorWeb(QMainWindow):
         # Aplicar skin inicial
         self.aplicar_skin(self.current_skin)
         
+        # Configurar user agent e JavaScript
+        self.configurar_user_agent()
+        self.aplicar_configuracoes_javascript()
+        
         # Criar primeira aba
         self.nova_aba()
+    
+    def configurar_user_agent(self):
+        """Configurar user agent personalizado para todas as páginas"""
+        profile = QWebEngineProfile.defaultProfile()
+        profile.setHttpUserAgent(self.user_agent)
+    
+    def aplicar_configuracoes_javascript(self):
+        """Aplicar configurações de JavaScript em todas as abas"""
+        # Configurar o perfil padrão
+        profile = QWebEngineProfile.defaultProfile()
+        settings = profile.settings()
+        
+        if self.javascript_enabled:
+            settings.setAttribute(QWebEngineSettings.JavascriptEnabled, True)
+            settings.setAttribute(QWebEngineSettings.JavascriptCanOpenWindows, True)
+            settings.setAttribute(QWebEngineSettings.JavascriptCanAccessClipboard, True)
+            self.statusBar().showMessage(f"Python Navigator {self.browser_version} - JavaScript: Ativado", 3000)
+        else:
+            settings.setAttribute(QWebEngineSettings.JavascriptEnabled, False)
+            settings.setAttribute(QWebEngineSettings.JavascriptCanOpenWindows, False)
+            settings.setAttribute(QWebEngineSettings.JavascriptCanAccessClipboard, False)
+            self.statusBar().showMessage(f"Python Navigator {self.browser_version} - JavaScript: Desativado", 3000)
+        
+        # Atualizar configurações em todas as abas existentes
+        for tab_widget, web_view in self.web_views.items():
+            page_settings = web_view.page().settings()
+            page_settings.setAttribute(QWebEngineSettings.JavascriptEnabled, self.javascript_enabled)
+            page_settings.setAttribute(QWebEngineSettings.JavascriptCanOpenWindows, self.javascript_enabled)
+            page_settings.setAttribute(QWebEngineSettings.JavascriptCanAccessClipboard, self.javascript_enabled)
     
     def carregar_configuracoes(self):
         """Carregar configurações salvas"""
@@ -468,6 +945,8 @@ class NavegadorWeb(QMainWindow):
                     config = json.load(f)
                     self.home_page = config.get("home_page", self.home_page)
                     self.current_skin = config.get("skin", "Padrão (Claro)")
+                    self.javascript_enabled = config.get("javascript_enabled", True)
+                    self.console_enabled = config.get("console_enabled", True)
         except Exception as e:
             print(f"Erro ao carregar configurações: {e}")
     
@@ -476,43 +955,46 @@ class NavegadorWeb(QMainWindow):
         self.current_skin = skin_name
         
         if skin_name == "Padrão (Claro)":
-            # Skin padrão (sem CSS adicional)
-            self.setStyleSheet("""
-                QTabBar::tab {
+            # Skin padrão com identificador
+            self.setStyleSheet(f"""
+                QMainWindow::title {{
+                    font-weight: bold;
+                }}
+                QTabBar::tab {{
                     background: #f0f0f0;
                     padding: 8px 15px;
                     margin: 2px;
-                }
-                QTabBar::tab:selected {
+                }}
+                QTabBar::tab:selected {{
                     background: white;
                     border-top: 2px solid #0078d7;
-                }
-                QTabBar::tab:hover {
+                }}
+                QTabBar::tab:hover {{
                     background: #e0e0e0;
-                }
-                QLineEdit {
+                }}
+                QLineEdit {{
                     padding: 5px;
                     border: 1px solid #ccc;
                     border-radius: 3px;
-                }
-                QPushButton {
+                }}
+                QPushButton {{
                     background: #f0f0f0;
                     border: 1px solid #ccc;
                     padding: 5px 10px;
                     border-radius: 3px;
-                }
-                QPushButton:hover {
+                }}
+                QPushButton:hover {{
                     background: #e0e0e0;
-                }
-                QMenuBar {
+                }}
+                QMenuBar {{
                     background-color: #f8f8f8;
-                }
-                QMenuBar::item {
+                }}
+                QMenuBar::item {{
                     padding: 5px 10px;
-                }
-                QMenuBar::item:selected {
+                }}
+                QMenuBar::item:selected {{
                     background-color: #e0e0e0;
-                }
+                }}
             """)
         else:
             # Carregar skin do arquivo CSS
@@ -539,7 +1021,8 @@ class NavegadorWeb(QMainWindow):
             historico.append({
                 "url": url,
                 "titulo": titulo,
-                "data": data_atual
+                "data": data_atual,
+                "navegador": f"{self.browser_name} {self.browser_version}"
             })
             
             # Manter apenas os últimos 100 itens
@@ -551,8 +1034,56 @@ class NavegadorWeb(QMainWindow):
         except Exception as e:
             print(f"Erro ao salvar histórico: {e}")
     
+    def visualizar_codigo_fonte(self):
+        """Visualizar código fonte da página atual"""
+        web_view = self.get_current_web_view()
+        if web_view:
+            url = web_view.url().toString()
+            titulo = web_view.title()
+            
+            # Mostrar mensagem de carregamento
+            self.statusBar().showMessage("Carregando código fonte...")
+            
+            # Obter HTML da página
+            web_view.page().toHtml(lambda html: self.mostrar_visualizador_codigo(url, html, titulo))
+    
+    def mostrar_visualizador_codigo(self, url, html, titulo):
+        """Mostrar janela do visualizador de código fonte"""
+        visualizador = VisualizadorCodigoFonte(self, url, html, titulo)
+        visualizador.exec_()
+        self.statusBar().showMessage("Código fonte carregado", 3000)
+    
+    def mostrar_console(self):
+        """Mostrar console JavaScript"""
+        if not self.console_window:
+            self.console_window = ConsoleWindow(self)
+        self.console_window.show()
+        self.console_window.raise_()
+    
+    def on_java_script_message(self, message):
+        """Receber mensagens do JavaScript"""
+        if self.console_enabled and self.console_window:
+            # Identificar tipo da mensagem
+            tipo = "info"
+            if "deprecated" in message.lower():
+                tipo = "deprecation"
+            elif "error" in message.lower() or "exception" in message.lower():
+                tipo = "error"
+            elif "warning" in message.lower() or "cors" in message.lower():
+                tipo = "warning"
+            
+            self.console_window.adicionar_mensagem(message, tipo)
+    
     def init_ui(self):
         """Inicializar interface do usuário"""
+        # Configurar perfil para capturar mensagens JavaScript
+        profile = QWebEngineProfile.defaultProfile()
+        
+        # Criar um novo perfil para capturar mensagens
+        if self.console_enabled:
+            # Conectar sinal para mensagens JavaScript
+            profile.setHttpUserAgent(self.user_agent)
+        
         # Criar menus
         menubar = self.menuBar()
         
@@ -570,6 +1101,36 @@ class NavegadorWeb(QMainWindow):
         sair_action.setShortcut("Ctrl+Q")
         sair_action.triggered.connect(self.close)
         file_menu.addAction(sair_action)
+        
+        # Menu Exibir
+        view_menu = menubar.addMenu("Exibir")
+        
+        ver_codigo_action = QAction("Código fonte da página", self)
+        ver_codigo_action.setShortcut("Ctrl+U")
+        ver_codigo_action.triggered.connect(self.visualizar_codigo_fonte)
+        view_menu.addAction(ver_codigo_action)
+        
+        ver_console_action = QAction("Console JavaScript", self)
+        ver_console_action.setShortcut("Ctrl+Shift+J")
+        ver_console_action.triggered.connect(self.mostrar_console)
+        view_menu.addAction(ver_console_action)
+        
+        view_menu.addSeparator()
+        
+        zoom_in_action = QAction("Aumentar zoom", self)
+        zoom_in_action.setShortcut("Ctrl++")
+        zoom_in_action.triggered.connect(self.zoom_in)
+        view_menu.addAction(zoom_in_action)
+        
+        zoom_out_action = QAction("Diminuir zoom", self)
+        zoom_out_action.setShortcut("Ctrl+-")
+        zoom_out_action.triggered.connect(self.zoom_out)
+        view_menu.addAction(zoom_out_action)
+        
+        zoom_reset_action = QAction("Zoom padrão", self)
+        zoom_reset_action.setShortcut("Ctrl+0")
+        zoom_reset_action.triggered.connect(self.zoom_reset)
+        view_menu.addAction(zoom_reset_action)
         
         # Menu Histórico
         historico_menu = menubar.addMenu("Histórico")
@@ -614,13 +1175,40 @@ class NavegadorWeb(QMainWindow):
         self.btn_forward = QPushButton("▶")
         self.btn_refresh = QPushButton("⟳")
         self.btn_home = QPushButton("🏠")
+        self.btn_code = QPushButton("</> Código")
+        self.btn_console = QPushButton("📋 Console")
         self.btn_new_tab = QPushButton("+ Nova Aba")
         
         self.btn_back.clicked.connect(self.go_back)
         self.btn_forward.clicked.connect(self.go_forward)
         self.btn_refresh.clicked.connect(self.refresh_page)
         self.btn_home.clicked.connect(self.go_home)
+        self.btn_code.clicked.connect(self.visualizar_codigo_fonte)
+        self.btn_console.clicked.connect(self.mostrar_console)
         self.btn_new_tab.clicked.connect(lambda: self.nova_aba())
+        
+        # Configurar estilo dos botões
+        self.btn_code.setStyleSheet("""
+            QPushButton {
+                background: #6c757d;
+                color: white;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background: #5a6268;
+            }
+        """)
+        
+        self.btn_console.setStyleSheet("""
+            QPushButton {
+                background: #17a2b8;
+                color: white;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background: #138496;
+            }
+        """)
         
         # Barra de URL
         self.url_bar = QLineEdit()
@@ -631,6 +1219,8 @@ class NavegadorWeb(QMainWindow):
         nav_bar.addWidget(self.btn_forward)
         nav_bar.addWidget(self.btn_refresh)
         nav_bar.addWidget(self.btn_home)
+        nav_bar.addWidget(self.btn_code)
+        nav_bar.addWidget(self.btn_console)
         nav_bar.addWidget(self.btn_new_tab)
         nav_bar.addWidget(self.url_bar)
         
@@ -653,12 +1243,54 @@ class NavegadorWeb(QMainWindow):
         
         self.shortcut_refresh = QShortcut(QKeySequence("F5"), self)
         self.shortcut_refresh.activated.connect(self.refresh_page)
+        
+        self.shortcut_code = QShortcut(QKeySequence("Ctrl+U"), self)
+        self.shortcut_code.activated.connect(self.visualizar_codigo_fonte)
+        
+        self.shortcut_console = QShortcut(QKeySequence("Ctrl+Shift+J"), self)
+        self.shortcut_console.activated.connect(self.mostrar_console)
+        
+        self.shortcut_zoom_in = QShortcut(QKeySequence("Ctrl++"), self)
+        self.shortcut_zoom_in.activated.connect(self.zoom_in)
+        
+        self.shortcut_zoom_out = QShortcut(QKeySequence("Ctrl+-"), self)
+        self.shortcut_zoom_out.activated.connect(self.zoom_out)
+        
+        self.shortcut_zoom_reset = QShortcut(QKeySequence("Ctrl+0"), self)
+        self.shortcut_zoom_reset.activated.connect(self.zoom_reset)
+        
+        # Adicionar identificador na barra de título
+        js_status = "JS: ON" if self.javascript_enabled else "JS: OFF"
+        self.statusBar().showMessage(f"Python Navigator {self.browser_version} - {js_status} - Pronto")
+    
+    def zoom_in(self):
+        """Aumentar zoom da página"""
+        web_view = self.get_current_web_view()
+        if web_view:
+            factor = web_view.zoomFactor()
+            web_view.setZoomFactor(factor + 0.1)
+            self.statusBar().showMessage(f"Zoom: {int((factor + 0.1) * 100)}%", 2000)
+    
+    def zoom_out(self):
+        """Diminuir zoom da página"""
+        web_view = self.get_current_web_view()
+        if web_view:
+            factor = web_view.zoomFactor()
+            web_view.setZoomFactor(max(0.3, factor - 0.1))
+            self.statusBar().showMessage(f"Zoom: {int((factor - 0.1) * 100)}%", 2000)
+    
+    def zoom_reset(self):
+        """Resetar zoom para padrão"""
+        web_view = self.get_current_web_view()
+        if web_view:
+            web_view.setZoomFactor(1.0)
+            self.statusBar().showMessage("Zoom: 100%", 2000)
     
     def abrir_arquivo_html(self):
         """Abrir arquivo HTML local"""
         file_path, _ = QFileDialog.getOpenFileName(
             self, 
-            "Abrir arquivo HTML", 
+            "Abrir arquivo HTML - Python Navigator", 
             "", 
             "Arquivos HTML (*.html *.htm);;Todos os arquivos (*.*)"
         )
@@ -714,6 +1346,26 @@ class NavegadorWeb(QMainWindow):
         
         # Criar web view
         web_view = QWebEngineView()
+        
+        # Configurar user agent e JavaScript individual para cada web view
+        web_view.page().profile().setHttpUserAgent(self.user_agent)
+        
+        # Configurar JavaScript
+        settings = web_view.page().settings()
+        settings.setAttribute(QWebEngineSettings.JavascriptEnabled, self.javascript_enabled)
+        settings.setAttribute(QWebEngineSettings.JavascriptCanOpenWindows, self.javascript_enabled)
+        settings.setAttribute(QWebEngineSettings.JavascriptCanAccessClipboard, self.javascript_enabled)
+        
+        # Outras configurações úteis
+        settings.setAttribute(QWebEngineSettings.PluginsEnabled, True)
+        settings.setAttribute(QWebEngineSettings.LocalStorageEnabled, True)
+        settings.setAttribute(QWebEngineSettings.WebGLEnabled, True)
+        settings.setAttribute(QWebEngineSettings.Accelerated2dCanvasEnabled, True)
+        settings.setAttribute(QWebEngineSettings.AutoLoadImages, True)
+        
+        # Conectar sinal para mensagens JavaScript
+        if self.console_enabled:
+            web_view.page().javaScriptConsoleMessage = self.on_java_script_message
         
         # Carregar URL
         try:
@@ -801,6 +1453,8 @@ class NavegadorWeb(QMainWindow):
     def on_load_finished(self, ok):
         """Quando o carregamento da página termina"""
         self.update_navigation_buttons()
+        js_status = "Ativado" if self.javascript_enabled else "Desativado"
+        self.statusBar().showMessage(f"Python Navigator {self.browser_version} - JavaScript: {js_status} - Página carregada", 3000)
     
     def update_navigation_buttons(self):
         """Atualizar o estado dos botões de navegação"""
@@ -860,8 +1514,9 @@ def main():
     app = QApplication(sys.argv)
     
     # Configurar aplicação
-    app.setApplicationName("Navegador Web")
-    app.setOrganizationName("MeuNavegador")
+    app.setApplicationName("Python Navigator")
+    app.setApplicationDisplayName("Python Navigator 1.0.1")
+    app.setOrganizationName("PythonNavigator")
     
     # Criar e mostrar navegador
     navegador = NavegadorWeb()
