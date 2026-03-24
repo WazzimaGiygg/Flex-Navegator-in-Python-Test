@@ -1,1 +1,92 @@
 
+📦 Sobre o Aplicativo
+O Gerenciador de Produtos é uma aplicação Python desenvolvida para o gerenciamento eficiente e seguro de produtos em uma loja. O sistema oferece uma interface intuitiva via terminal (CLI) e utiliza criptografia avançada para proteger os dados armazenados.
+
+✨ Principais Características
+🔒 Dados Criptografados: Todos os produtos são salvos em arquivos JSON com criptografia de ponta a ponta usando o algoritmo Fernet
+
+📋 CRUD Completo: Operações completas de criação, leitura, atualização e exclusão de produtos
+
+🔍 Busca Inteligente: Localize produtos por nome ou ID rapidamente
+
+📊 Estatísticas em Tempo Real: Acompanhe o valor total do estoque, média de preços e distribuição por categorias
+
+🏷️ Categorias: Organize seus produtos por categorias personalizadas
+
+🔐 Senha Personalizada: Suporte a senha customizada para criptografia dos dados
+
+💾 Portabilidade: Defina qualquer local/arquivo como banco de dados
+
+🛡️ Segurança
+O aplicativo implementa múltiplas camadas de segurança:
+
+Criptografia Fernet: Utiliza o padrão de criptografia simétrica do módulo cryptography
+
+Derivação de Chave PBKDF2: Transforma sua senha em uma chave criptográfica segura
+
+Salt Fixo: Adiciona uma camada extra de proteção contra ataques de rainbow table
+
+Armazenamento Seguro: Os dados nunca são armazenados em texto puro
+
+🚀 Funcionalidades
+1. Adicionar Produto
+Registre novos produtos com as seguintes informações:
+
+Nome do produto
+
+Preço (R$)
+
+Quantidade em estoque
+
+Categoria (personalizável)
+
+Descrição (opcional)
+
+2. Listar Produtos
+Visualize todos os produtos cadastrados em formato de tabela com:
+
+ID único
+
+Nome
+
+Preço
+
+Quantidade
+
+Categoria
+
+3. Buscar Produtos
+Encontre produtos rapidamente através de:
+
+Nome (busca parcial)
+
+ID único
+
+4. Atualizar Produto
+Modifique informações de produtos existentes mantendo o histórico de atualizações
+
+5. Remover Produto
+Exclua produtos com confirmação para evitar exclusões acidentais
+
+6. Estatísticas
+Acesse métricas importantes:
+
+Total de produtos cadastrados
+
+Valor total do estoque
+
+Preço médio dos produtos
+
+Distribuição por categorias
+
+7. Configurações
+Personalize o sistema:
+
+Altere o arquivo de banco de dados
+
+Defina uma nova senha de criptografia
+
+📋 Pré-requisitos
+Python 3.7 ou superior
+
+Pip (gerenciador de pacotes Python)
