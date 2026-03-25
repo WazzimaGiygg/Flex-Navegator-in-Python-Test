@@ -1,0 +1,208 @@
+# File Crypto Manager
+
+## 📋 Visão Geral
+
+O **File Crypto Manager** é uma aplicação desktop com interface gráfica desenvolvida em Python que permite criptografar e descriptografar arquivos utilizando o formato JSON como container. A aplicação utiliza criptografia AES-256 para garantir a segurança dos dados, protegidos por uma senha definida pelo usuário.
+
+## ✨ Funcionalidades
+
+- **Interface gráfica intuitiva** - Fácil de usar com seleção de arquivos e pastas
+- **Criptografia AES-256** - Algoritmo robusto de criptografia simétrica
+- **Container JSON** - Arquivos criptografados são armazenados como JSON estruturado
+- **Suporte a múltiplos arquivos** - Processa vários arquivos simultaneamente
+- **Seleção recursiva de pastas** - Adiciona todos os arquivos de uma pasta e subpastas
+- **Log detalhado** - Acompanhamento em tempo real das operações
+- **Processamento em background** - Interface não trava durante operações longas
+- **Validação de senha** - Confirmação de senha para evitar erros
+
+## 🔧 Tecnologias Utilizadas
+
+- **Python 3.x** - Linguagem de programação
+- **Tkinter** - Interface gráfica nativa
+- **Cryptography** - Biblioteca para operações criptográficas
+- **JSON** - Formato de armazenamento dos dados criptografados
+- **Threading** - Processamento assíncrono
+
+## 📦 Instalação
+
+### Pré-requisitos
+
+- Python 3.6 ou superior
+- Pip (gerenciador de pacotes Python)
+
+### Passos para instalação
+
+1. Clone o repositório:
+```bash
+git clone https://github.com/seu-usuario/file-crypto-manager.git
+cd file-crypto-manager
+```
+
+2. Instale a dependência necessária:
+```bash
+pip install cryptography
+```
+
+3. Execute a aplicação:
+```bash
+python crypto_app.py
+```
+
+## 🚀 Como Usar
+
+### 1. Selecionando Arquivos
+
+- **Adicionar Arquivos**: Seleciona arquivos individuais para processamento
+- **Adicionar Pasta**: Adiciona todos os arquivos de uma pasta (incluindo subpastas)
+- **Remover Selecionados**: Remove os arquivos selecionados na lista
+- **Limpar Lista**: Remove todos os arquivos da lista
+
+### 2. Definindo a Senha
+
+Digite a senha nos dois campos de entrada:
+- **Senha**: A senha que será usada para criptografar/descriptografar
+- **Confirmar**: Redigite a senha para confirmação
+
+> ⚠️ **Importante**: A senha não é armazenada em nenhum lugar. Se você perder a senha, os arquivos criptografados não poderão ser recuperados.
+
+### 3. Criptografando Arquivos
+
+1. Selecione os arquivos ou pastas que deseja criptografar
+2. Digite e confirme a senha
+3. Clique em **"Criptografar para JSON"**
+
+Para cada arquivo processado, será criado um novo arquivo com extensão `.encrypted.json` no mesmo diretório do arquivo original. O arquivo original permanece inalterado.
+
+### 4. Descriptografando Arquivos
+
+1. Selecione os arquivos `.encrypted.json` que deseja descriptografar
+2. Digite a mesma senha usada na criptografia
+3. Clique em **"Descriptografar de JSON"**
+
+O arquivo original será restaurado no mesmo diretório. Se já existir um arquivo com o mesmo nome, será adicionado um sufixo automático (`_restored_1`, `_restored_2`, etc.).
+
+## 🔒 Estrutura do Arquivo Criptografado
+
+Cada arquivo criptografado é armazenado como um JSON com a seguinte estrutura:
+
+```json
+{
+  "encrypted": true,
+  "salt": "base64_encoded_salt",
+  "iv": "base64_encoded_iv",
+  "data": "base64_encoded_encrypted_data",
+  "original_filename": "nome_original.ext",
+  "original_size": 12345
+}
+```
+
+### Campos Explicados:
+
+- **encrypted**: Flag indicando que é um arquivo criptografado
+- **salt**: Valor aleatório usado na derivação da chave (16 bytes)
+- **iv**: Vetor de inicialização para o modo CFB (16 bytes)
+- **data**: Dados originais criptografados em Base64
+- **original_filename**: Nome original do arquivo para restauração
+- **original_size**: Tamanho original para verificação de integridade
+
+## 🔐 Segurança
+
+- **AES-256**: Algoritmo de criptografia padrão do governo dos EUA
+- **PBKDF2**: Derivação de chave com 100.000 iterações
+- **Salt único**: Cada arquivo usa um salt diferente
+- **IV único**: Cada arquivo usa um vetor de inicialização diferente
+- **Modo CFB**: Modo de operação que não requer padding
+
+### Por que cada arquivo tem salt e IV diferentes?
+
+- **Salt diferente**: Mesmo com a mesma senha, a chave derivada será diferente para cada arquivo
+- **IV diferente**: Mesmo com a mesma chave, o texto cifrado será diferente para arquivos idênticos
+
+Isso impede ataques de análise de padrões e torna o sistema mais seguro.
+
+## 📊 Exemplo de Uso
+
+### Criptografando um arquivo de texto
+
+1. Arquivo original: `documento.txt` (conteúdo: "Hello World")
+2. Após criptografar: `documento.txt.encrypted.json`
+3. O arquivo JSON contém os dados criptografados
+
+### Descriptografando
+
+1. Selecione `documento.txt.encrypted.json`
+2. Digite a senha correta
+3. Arquivo restaurado: `documento.txt`
+
+## ⚙️ Arquitetura Técnica
+
+### Fluxo de Criptografia
+
+```
+Arquivo Original → Leitura (bytes) → Derivação da Chave → 
+Criptografia AES-256-CFB → Codificação Base64 → 
+Criação JSON → Arquivo .encrypted.json
+```
+
+### Fluxo de Descriptografia
+
+```
+Arquivo .encrypted.json → Parse JSON → Decodificação Base64 → 
+Derivação da Chave → Decriptografia AES-256-CFB → 
+Restauração do Arquivo Original
+```
+
+### Derivação de Chave (PBKDF2)
+
+```python
+kdf = PBKDF2HMAC(
+    algorithm=hashes.SHA256(),
+    length=32,  # 256 bits para AES-256
+    salt=salt,
+    iterations=100000,  # 100 mil iterações
+    backend=default_backend()
+)
+key = kdf.derive(password.encode('utf-8'))
+```
+
+## 🎯 Casos de Uso
+
+- **Backup seguro**: Criptografe arquivos antes de enviar para a nuvem
+- **Compartilhamento seguro**: Compartilhe apenas o arquivo JSON e a senha
+- **Armazenamento de dados sensíveis**: Proteja documentos pessoais ou empresariais
+- **Transferência de arquivos**: Envie arquivos criptografados por e-mail ou mensagens
+
+## ⚠️ Limitações e Considerações
+
+- **Arquivos grandes**: O processamento é feito em memória, então arquivos muito grandes podem consumir muita RAM
+- **Senha perdida**: Não há recuperação de senha - mantenha suas senhas em local seguro
+- **Formato específico**: Apenas arquivos criados por este aplicativo podem ser descriptografados
+- **Python necessário**: A aplicação requer Python para executar
+
+## 🔧 Personalização
+
+Você pode modificar alguns parâmetros de segurança no código:
+
+- **Número de iterações PBKDF2**: Aumente para mais segurança (padrão: 100.000)
+- **Tamanho da chave**: Pode ser alterado para AES-128 ou AES-192 (padrão: 256 bits)
+- **Modo de operação**: Atualmente CFB, pode ser alterado para CBC ou GCM
+
+## 📝 Licença
+
+Este projeto está sob a licença MIT. Veja o arquivo LICENSE para mais detalhes.
+
+## 🤝 Contribuições
+
+Contribuições são bem-vindas! Sinta-se à vontade para:
+
+1. Reportar bugs
+2. Sugerir novas funcionalidades
+3. Enviar pull requests
+
+## 📧 Contato
+
+Para dúvidas ou sugestões, abra uma issue no GitHub.
+
+---
+
+**Aviso**: Este aplicativo é fornecido "como está", sem garantias. Use por sua conta e risco. Sempre mantenha backups dos seus arquivos importantes antes de realizar operações de criptografia.
