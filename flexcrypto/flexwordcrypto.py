@@ -11,7 +11,24 @@ class CryptoApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Cripto Mobile")
-        self.root.geometry("450x800")  # Corrigido: adicionado "x" entre largura e altura
+        
+        # Configurar janela com tamanho fixo
+        window_width = 480
+        window_height = 850
+        
+        # Definir tamanho fixo da janela
+        self.root.geometry(f"{window_width}x{window_height}")
+        
+        # Impedir redimensionamento
+        self.root.resizable(False, False)
+        
+        # Centralizar a janela na tela
+        screen_width = self.root.winfo_screenwidth()
+        screen_height = self.root.winfo_screenheight()
+        x = (screen_width - window_width) // 2
+        y = (screen_height - window_height) // 2
+        self.root.geometry(f"{window_width}x{window_height}+{x}+{y}")
+        
         self.root.configure(bg='#f5f7fa')
         
         # Configurar estilo
@@ -27,7 +44,7 @@ class CryptoApp:
             lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all"))
         )
         
-        self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+        self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw", width=window_width-20)
         self.canvas.configure(yscrollcommand=self.scrollbar.set)
         
         self.canvas.pack(side="left", fill="both", expand=True)
@@ -79,7 +96,8 @@ class CryptoApp:
             bd=1.5,
             highlightthickness=1.5,
             highlightbackground='#e2e8f0',
-            highlightcolor='#3b82f6'
+            highlightcolor='#3b82f6',
+            wrap=tk.WORD
         )
         self.plain_text.pack(fill='x', pady=(0, 12))
         self.plain_text.insert('1.0', "Digite o texto...")
@@ -122,30 +140,32 @@ class CryptoApp:
         encrypt_frame = tk.Frame(self.container, bg='white')
         encrypt_frame.pack(fill='x', pady=(0, 20))
         
-        # Label do campo
-        encrypt_label_frame = tk.Frame(encrypt_frame, bg='white')
-        encrypt_label_frame.pack(fill='x')
+        # Label do campo e botão de copiar lado a lado
+        top_frame = tk.Frame(encrypt_frame, bg='white')
+        top_frame.pack(fill='x', pady=(0, 5))
         
         encrypt_label = tk.Label(
-            encrypt_label_frame,
-            text="Texto Criptografado:",
-            font=('-apple-system', 12),
+            top_frame,
+            text="📋 Texto Criptografado:",
+            font=('-apple-system', 12, 'bold'),
             bg='white',
             fg='#334155',
             anchor='w'
         )
         encrypt_label.pack(side='left')
         
-        # Botão de copiar
+        # Botão de copiar - bem visível
         self.copy_encrypt_btn = tk.Button(
-            encrypt_label_frame,
+            top_frame,
             text="📋 Copiar",
-            font=('-apple-system', 11),
-            bg='#f1f5f9',
-            fg='#3b82f6',
-            relief='flat',
-            bd=1,
+            font=('-apple-system', 11, 'bold'),
+            bg='#3b82f6',
+            fg='white',
+            relief='raised',
+            bd=2,
             cursor='hand2',
+            padx=10,
+            pady=2,
             command=lambda: self.copy_to_clipboard(self.encrypted_text, "criptografado")
         )
         self.copy_encrypt_btn.pack(side='right')
@@ -154,16 +174,16 @@ class CryptoApp:
         self.encrypted_text = scrolledtext.ScrolledText(
             encrypt_frame,
             height=4,
-            font=('-apple-system', 12),
+            font=('-apple-system', 11),
             bg='#f1f5f9',
             fg='#334155',
-            relief='flat',
-            bd=1.5,
-            highlightthickness=1.5,
+            relief='solid',
+            bd=1,
+            highlightthickness=1,
             highlightbackground='#cbd5e1',
-            state='normal'
+            wrap=tk.WORD
         )
-        self.encrypted_text.pack(fill='x', pady=(5, 0))
+        self.encrypted_text.pack(fill='x', pady=(0, 0))
         self.encrypted_text.insert('1.0', "Texto criptografado aparecerá aqui")
         self.encrypted_text.configure(state='disabled')
         
@@ -190,14 +210,15 @@ class CryptoApp:
         self.cipher_text = scrolledtext.ScrolledText(
             self.container,
             height=5,
-            font=('-apple-system', 12),
+            font=('-apple-system', 11),
             bg='#f8fafc',
             fg='#0f172a',
             relief='flat',
             bd=1.5,
             highlightthickness=1.5,
             highlightbackground='#e2e8f0',
-            highlightcolor='#3b82f6'
+            highlightcolor='#3b82f6',
+            wrap=tk.WORD
         )
         self.cipher_text.pack(fill='x', pady=(0, 12))
         self.cipher_text.insert('1.0', "Cole o texto criptografado...")
@@ -240,30 +261,32 @@ class CryptoApp:
         decrypt_frame = tk.Frame(self.container, bg='white')
         decrypt_frame.pack(fill='x', pady=(0, 0))
         
-        # Label do campo
-        decrypt_label_frame = tk.Frame(decrypt_frame, bg='white')
-        decrypt_label_frame.pack(fill='x')
+        # Label do campo e botão de copiar lado a lado
+        top_frame = tk.Frame(decrypt_frame, bg='white')
+        top_frame.pack(fill='x', pady=(0, 5))
         
         decrypt_label = tk.Label(
-            decrypt_label_frame,
-            text="Texto Descriptografado:",
-            font=('-apple-system', 12),
+            top_frame,
+            text="📄 Texto Descriptografado:",
+            font=('-apple-system', 12, 'bold'),
             bg='white',
             fg='#334155',
             anchor='w'
         )
         decrypt_label.pack(side='left')
         
-        # Botão de copiar
+        # Botão de copiar - bem visível
         self.copy_decrypt_btn = tk.Button(
-            decrypt_label_frame,
+            top_frame,
             text="📋 Copiar",
-            font=('-apple-system', 11),
-            bg='#f1f5f9',
-            fg='#3b82f6',
-            relief='flat',
-            bd=1,
+            font=('-apple-system', 11, 'bold'),
+            bg='#3b82f6',
+            fg='white',
+            relief='raised',
+            bd=2,
             cursor='hand2',
+            padx=10,
+            pady=2,
             command=lambda: self.copy_to_clipboard(self.decrypted_text, "descriptografado")
         )
         self.copy_decrypt_btn.pack(side='right')
@@ -272,16 +295,16 @@ class CryptoApp:
         self.decrypted_text = scrolledtext.ScrolledText(
             decrypt_frame,
             height=4,
-            font=('-apple-system', 14),
+            font=('-apple-system', 13),
             bg='#f1f5f9',
             fg='#334155',
-            relief='flat',
-            bd=1.5,
-            highlightthickness=1.5,
+            relief='solid',
+            bd=1,
+            highlightthickness=1,
             highlightbackground='#cbd5e1',
-            state='normal'
+            wrap=tk.WORD
         )
-        self.decrypted_text.pack(fill='x', pady=(5, 0))
+        self.decrypted_text.pack(fill='x', pady=(0, 0))
         self.decrypted_text.insert('1.0', "Texto descriptografado aparecerá aqui")
         self.decrypted_text.configure(state='disabled')
         
@@ -323,16 +346,18 @@ class CryptoApp:
             # Feedback visual no botão
             if field_name == "criptografado":
                 original_text = self.copy_encrypt_btn.cget('text')
-                self.copy_encrypt_btn.config(text="✓ Copiado!", bg='#86efac', fg='#166534')
-                self.root.after(2000, lambda: self.copy_encrypt_btn.config(text=original_text, bg='#f1f5f9', fg='#3b82f6'))
+                original_bg = self.copy_encrypt_btn.cget('bg')
+                self.copy_encrypt_btn.config(text="✓ Copiado!", bg='#10b981', fg='white')
+                self.root.after(2000, lambda: self.copy_encrypt_btn.config(text=original_text, bg=original_bg, fg='white'))
             else:
                 original_text = self.copy_decrypt_btn.cget('text')
-                self.copy_decrypt_btn.config(text="✓ Copiado!", bg='#86efac', fg='#166534')
-                self.root.after(2000, lambda: self.copy_decrypt_btn.config(text=original_text, bg='#f1f5f9', fg='#3b82f6'))
+                original_bg = self.copy_decrypt_btn.cget('bg')
+                self.copy_decrypt_btn.config(text="✓ Copiado!", bg='#10b981', fg='white')
+                self.root.after(2000, lambda: self.copy_decrypt_btn.config(text=original_text, bg=original_bg, fg='white'))
             
             # Feedback no campo
-            text_widget.configure(bg='#e0f2fe')
-            self.root.after(300, lambda: text_widget.configure(bg='#f1f5f9'))
+            text_widget.configure(bg='#d1fae5')
+            self.root.after(500, lambda: text_widget.configure(bg='#f1f5f9'))
             
             messagebox.showinfo("Sucesso", f"✅ Texto {field_name} copiado para a área de transferência!")
             
@@ -386,8 +411,8 @@ class CryptoApp:
             self.update_text_field(self.encrypted_text, encrypted_text)
             
             # Feedback visual
-            self.encrypted_text.configure(bg='#f0fdf4')
-            self.root.after(300, lambda: self.encrypted_text.configure(bg='#f1f5f9'))
+            self.encrypted_text.configure(bg='#d1fae5')
+            self.root.after(500, lambda: self.encrypted_text.configure(bg='#f1f5f9'))
             
             messagebox.showinfo("Sucesso", "✅ Texto criptografado com sucesso!")
             
@@ -440,8 +465,8 @@ class CryptoApp:
             self.update_text_field(self.decrypted_text, decrypted_text)
             
             # Feedback visual de sucesso
-            self.decrypted_text.configure(bg='#f0fdf4')
-            self.root.after(300, lambda: self.decrypted_text.configure(bg='#f1f5f9'))
+            self.decrypted_text.configure(bg='#d1fae5')
+            self.root.after(500, lambda: self.decrypted_text.configure(bg='#f1f5f9'))
             
             messagebox.showinfo("Sucesso", "✅ Texto descriptografado com sucesso!")
             
@@ -449,8 +474,8 @@ class CryptoApp:
             self.update_text_field(self.decrypted_text, "")
             messagebox.showerror("Erro", "❌ Falha na descriptografia. Verifique a senha e o texto.")
             # Feedback visual de erro
-            self.decrypted_text.configure(bg='#fef2f2')
-            self.root.after(300, lambda: self.decrypted_text.configure(bg='#f1f5f9'))
+            self.decrypted_text.configure(bg='#fee2e2')
+            self.root.after(500, lambda: self.decrypted_text.configure(bg='#f1f5f9'))
     
     def get_text_content(self, text_widget):
         """Obtém o conteúdo do widget de texto"""
