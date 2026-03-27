@@ -18,6 +18,405 @@ except ImportError:
     CRYPTO_AVAILABLE = False
     print("Aviso: Biblioteca 'cryptography' não instalada. Funcionalidade de criptografia desabilitada.")
 
+class Theme:
+    """Classe para gerenciar temas do aplicativo"""
+    
+    def __init__(self, name, colors, fonts, custom_css=""):
+        self.name = name
+        self.colors = colors
+        self.fonts = fonts
+        self.custom_css = custom_css
+    
+    def generate_stylesheet(self):
+        """Gerar o CSS completo baseado nas configurações do tema"""
+        # Cores padrão
+        bg_color = self.colors.get('bg_color', '#f5f5f5')
+        text_color = self.colors.get('text_color', '#2c3e50')
+        editor_bg = self.colors.get('editor_bg', 'white')
+        editor_text = self.colors.get('editor_text', '#2c3e50')
+        selection_bg = self.colors.get('selection_bg', '#3498db')
+        selection_text = self.colors.get('selection_text', 'white')
+        toolbar_bg = self.colors.get('toolbar_bg', '#ecf0f1')
+        menubar_bg = self.colors.get('menubar_bg', '#34495e')
+        menubar_text = self.colors.get('menubar_text', 'white')
+        statusbar_bg = self.colors.get('statusbar_bg', '#34495e')
+        statusbar_text = self.colors.get('statusbar_text', 'white')
+        button_bg = self.colors.get('button_bg', '#3498db')
+        button_hover = self.colors.get('button_hover', '#2980b9')
+        button_text = self.colors.get('button_text', 'white')
+        
+        # Fontes
+        editor_font = self.fonts.get('editor', 'Consolas, monospace')
+        editor_size = self.fonts.get('editor_size', '11')
+        ui_font = self.fonts.get('ui', 'Segoe UI, Arial')
+        
+        # Gerar CSS
+        stylesheet = f"""
+        QMainWindow {{
+            background-color: {bg_color};
+        }}
+        
+        QPlainTextEdit {{
+            background-color: {editor_bg};
+            color: {editor_text};
+            font-family: '{editor_font}';
+            font-size: {editor_size}pt;
+            border: none;
+            selection-background-color: {selection_bg};
+            selection-color: {selection_text};
+        }}
+        
+        QToolBar {{
+            background-color: {toolbar_bg};
+            border: none;
+            spacing: 5px;
+            padding: 5px;
+        }}
+        
+        QToolBar QToolButton {{
+            background-color: transparent;
+            border: none;
+            border-radius: 3px;
+            padding: 5px;
+        }}
+        
+        QToolBar QToolButton:hover {{
+            background-color: {button_hover};
+        }}
+        
+        QToolBar QToolButton:pressed {{
+            background-color: {button_hover};
+        }}
+        
+        QMenuBar {{
+            background-color: {menubar_bg};
+            color: {menubar_text};
+            font-family: '{ui_font}';
+        }}
+        
+        QMenuBar::item {{
+            background-color: transparent;
+            padding: 5px 10px;
+        }}
+        
+        QMenuBar::item:selected {{
+            background-color: {button_hover};
+        }}
+        
+        QMenu {{
+            background-color: {editor_bg};
+            color: {editor_text};
+            border: 1px solid {toolbar_bg};
+            font-family: '{ui_font}';
+        }}
+        
+        QMenu::item {{
+            padding: 5px 30px 5px 20px;
+        }}
+        
+        QMenu::item:selected {{
+            background-color: {selection_bg};
+            color: {selection_text};
+        }}
+        
+        QStatusBar {{
+            background-color: {statusbar_bg};
+            color: {statusbar_text};
+            font-family: '{ui_font}';
+        }}
+        
+        #search-bar {{
+            background-color: {toolbar_bg};
+            border-top: 1px solid {button_hover};
+        }}
+        
+        QLineEdit {{
+            padding: 5px;
+            border: 1px solid {button_hover};
+            border-radius: 3px;
+            background-color: {editor_bg};
+            color: {editor_text};
+            font-family: '{ui_font}';
+        }}
+        
+        QLineEdit:focus {{
+            border-color: {selection_bg};
+        }}
+        
+        QPushButton {{
+            padding: 5px 10px;
+            background-color: {button_bg};
+            color: {button_text};
+            border: none;
+            border-radius: 3px;
+            font-family: '{ui_font}';
+        }}
+        
+        QPushButton:hover {{
+            background-color: {button_hover};
+        }}
+        
+        QPushButton:pressed {{
+            background-color: {button_hover};
+        }}
+        
+        QDockWidget::title {{
+            background-color: {toolbar_bg};
+            padding: 5px;
+            text-align: left;
+            color: {editor_text};
+        }}
+        
+        QTabWidget::pane {{
+            border: 1px solid {toolbar_bg};
+            background-color: {editor_bg};
+        }}
+        
+        QTabBar::tab {{
+            background-color: {toolbar_bg};
+            padding: 5px 10px;
+            margin-right: 2px;
+            color: {editor_text};
+        }}
+        
+        QTabBar::tab:selected {{
+            background-color: {editor_bg};
+        }}
+        
+        QScrollBar:vertical {{
+            background: {toolbar_bg};
+            width: 12px;
+            margin: 0px;
+        }}
+        
+        QScrollBar::handle:vertical {{
+            background: {selection_bg};
+            min-height: 20px;
+            border-radius: 6px;
+        }}
+        
+        QScrollBar::handle:vertical:hover {{
+            background: {button_hover};
+        }}
+        
+        QScrollBar:horizontal {{
+            background: {toolbar_bg};
+            height: 12px;
+            margin: 0px;
+        }}
+        
+        QScrollBar::handle:horizontal {{
+            background: {selection_bg};
+            min-width: 20px;
+            border-radius: 6px;
+        }}
+        
+        QScrollBar::handle:horizontal:hover {{
+            background: {button_hover};
+        }}
+        
+        {self.custom_css}
+        """
+        
+        return stylesheet
+
+class ThemeManager:
+    """Gerenciador de temas"""
+    
+    def __init__(self, app):
+        self.app = app
+        self.themes = {}
+        self.current_theme = None
+        self.themes_dir = "themes"
+        
+        # Criar diretório de temas se não existir
+        if not os.path.exists(self.themes_dir):
+            os.makedirs(self.themes_dir)
+        
+        # Carregar temas padrão
+        self.load_default_themes()
+        
+        # Carregar temas salvos
+        self.load_saved_themes()
+    
+    def load_default_themes(self):
+        """Carregar temas padrão"""
+        # Tema Claro (padrão)
+        light_colors = {
+            'bg_color': '#f5f5f5',
+            'text_color': '#2c3e50',
+            'editor_bg': 'white',
+            'editor_text': '#2c3e50',
+            'selection_bg': '#3498db',
+            'selection_text': 'white',
+            'toolbar_bg': '#ecf0f1',
+            'menubar_bg': '#34495e',
+            'menubar_text': 'white',
+            'statusbar_bg': '#34495e',
+            'statusbar_text': 'white',
+            'button_bg': '#3498db',
+            'button_hover': '#2980b9',
+            'button_text': 'white'
+        }
+        
+        light_fonts = {
+            'editor': 'Consolas',
+            'editor_size': '11',
+            'ui': 'Segoe UI'
+        }
+        
+        self.themes['Claro'] = Theme('Claro', light_colors, light_fonts)
+        
+        # Tema Escuro
+        dark_colors = {
+            'bg_color': '#1e1e1e',
+            'text_color': '#d4d4d4',
+            'editor_bg': '#252526',
+            'editor_text': '#d4d4d4',
+            'selection_bg': '#264f78',
+            'selection_text': 'white',
+            'toolbar_bg': '#2d2d30',
+            'menubar_bg': '#2d2d30',
+            'menubar_text': '#d4d4d4',
+            'statusbar_bg': '#007acc',
+            'statusbar_text': 'white',
+            'button_bg': '#0e639c',
+            'button_hover': '#1177bb',
+            'button_text': 'white'
+        }
+        
+        dark_fonts = {
+            'editor': 'Consolas',
+            'editor_size': '11',
+            'ui': 'Segoe UI'
+        }
+        
+        self.themes['Escuro'] = Theme('Escuro', dark_colors, dark_fonts)
+        
+        # Tema Solarized
+        solarized_colors = {
+            'bg_color': '#fdf6e3',
+            'text_color': '#657b83',
+            'editor_bg': '#fdf6e3',
+            'editor_text': '#657b83',
+            'selection_bg': '#eee8d5',
+            'selection_text': '#586e75',
+            'toolbar_bg': '#eee8d5',
+            'menubar_bg': '#002b36',
+            'menubar_text': '#839496',
+            'statusbar_bg': '#073642',
+            'statusbar_text': '#839496',
+            'button_bg': '#2aa198',
+            'button_hover': '#268bd2',
+            'button_text': '#fdf6e3'
+        }
+        
+        solarized_fonts = {
+            'editor': 'Consolas',
+            'editor_size': '11',
+            'ui': 'Segoe UI'
+        }
+        
+        self.themes['Solarized'] = Theme('Solarized', solarized_colors, solarized_fonts)
+        
+        # Tema Monokai
+        monokai_colors = {
+            'bg_color': '#272822',
+            'text_color': '#f8f8f2',
+            'editor_bg': '#272822',
+            'editor_text': '#f8f8f2',
+            'selection_bg': '#49483e',
+            'selection_text': '#f8f8f2',
+            'toolbar_bg': '#3e3d32',
+            'menubar_bg': '#272822',
+            'menubar_text': '#f8f8f2',
+            'statusbar_bg': '#75715e',
+            'statusbar_text': '#f8f8f2',
+            'button_bg': '#e6db74',
+            'button_hover': '#f8f8f2',
+            'button_text': '#272822'
+        }
+        
+        monokai_fonts = {
+            'editor': 'Consolas',
+            'editor_size': '11',
+            'ui': 'Segoe UI'
+        }
+        
+        self.themes['Monokai'] = Theme('Monokai', monokai_colors, monokai_fonts)
+    
+    def load_saved_themes(self):
+        """Carregar temas salvos pelo usuário"""
+        if os.path.exists(self.themes_dir):
+            for filename in os.listdir(self.themes_dir):
+                if filename.endswith('.json'):
+                    try:
+                        with open(os.path.join(self.themes_dir, filename), 'r', encoding='utf-8') as f:
+                            theme_data = json.load(f)
+                            name = theme_data.get('name', filename[:-5])
+                            colors = theme_data.get('colors', {})
+                            fonts = theme_data.get('fonts', {})
+                            custom_css = theme_data.get('custom_css', '')
+                            self.themes[name] = Theme(name, colors, fonts, custom_css)
+                    except Exception as e:
+                        print(f"Erro ao carregar tema {filename}: {e}")
+    
+    def save_theme(self, theme):
+        """Salvar tema personalizado"""
+        theme_data = {
+            'name': theme.name,
+            'colors': theme.colors,
+            'fonts': theme.fonts,
+            'custom_css': theme.custom_css
+        }
+        
+        filename = theme.name.replace(' ', '_') + '.json'
+        filepath = os.path.join(self.themes_dir, filename)
+        
+        with open(filepath, 'w', encoding='utf-8') as f:
+            json.dump(theme_data, f, indent=2, ensure_ascii=False)
+    
+    def apply_theme(self, theme_name):
+        """Aplicar tema ao aplicativo"""
+        if theme_name in self.themes:
+            self.current_theme = self.themes[theme_name]
+            stylesheet = self.current_theme.generate_stylesheet()
+            self.app.setStyleSheet(stylesheet)
+            return True
+        return False
+    
+    def get_theme_names(self):
+        """Obter lista de nomes de temas"""
+        return list(self.themes.keys())
+    
+    def create_custom_theme(self, name, colors, fonts, custom_css=""):
+        """Criar um tema personalizado"""
+        if name in self.themes:
+            return False
+        
+        theme = Theme(name, colors, fonts, custom_css)
+        self.themes[name] = theme
+        self.save_theme(theme)
+        return True
+    
+    def delete_theme(self, theme_name):
+        """Excluir um tema personalizado"""
+        if theme_name in ['Claro', 'Escuro', 'Solarized', 'Monokai']:
+            return False  # Não pode excluir temas padrão
+        
+        if theme_name in self.themes:
+            # Remover arquivo
+            filename = theme_name.replace(' ', '_') + '.json'
+            filepath = os.path.join(self.themes_dir, filename)
+            if os.path.exists(filepath):
+                os.remove(filepath)
+            
+            # Remover do dicionário
+            del self.themes[theme_name]
+            return True
+        
+        return False
+
 class HTMLPlugin:
     """Classe para gerenciar plugins HTML"""
     
@@ -33,6 +432,189 @@ class HTMLPlugin:
         self.widget = QWebEngineView()
         self.widget.setHtml(self.html_code)
         return self.widget
+
+class ThemeDialog(QDialog):
+    """Diálogo para criar/editar temas"""
+    
+    def __init__(self, theme_manager, parent=None, edit_theme=None):
+        super().__init__(parent)
+        self.theme_manager = theme_manager
+        self.edit_theme = edit_theme
+        self.setWindowTitle(f"{'Editar' if edit_theme else 'Criar'} Tema")
+        self.setModal(True)
+        self.resize(600, 700)
+        
+        self.init_ui()
+        
+        if edit_theme:
+            self.load_theme_data()
+    
+    def init_ui(self):
+        """Inicializar interface do diálogo"""
+        layout = QVBoxLayout()
+        
+        # Nome do tema
+        name_layout = QHBoxLayout()
+        name_layout.addWidget(QLabel("Nome do Tema:"))
+        self.name_input = QLineEdit()
+        self.name_input.setPlaceholderText("Ex: Meu Tema Personalizado")
+        name_layout.addWidget(self.name_input)
+        layout.addLayout(name_layout)
+        
+        # Abas para configurações
+        tabs = QTabWidget()
+        
+        # Aba de cores
+        colors_tab = QWidget()
+        colors_layout = QFormLayout()
+        
+        self.color_inputs = {}
+        color_fields = [
+            ('bg_color', 'Cor de Fundo Principal'),
+            ('editor_bg', 'Cor de Fundo do Editor'),
+            ('editor_text', 'Cor do Texto'),
+            ('selection_bg', 'Cor de Seleção'),
+            ('selection_text', 'Cor do Texto Selecionado'),
+            ('toolbar_bg', 'Cor da Barra de Ferramentas'),
+            ('menubar_bg', 'Cor da Barra de Menus'),
+            ('menubar_text', 'Cor do Texto do Menu'),
+            ('statusbar_bg', 'Cor da Barra de Status'),
+            ('statusbar_text', 'Cor do Texto da Barra de Status'),
+            ('button_bg', 'Cor dos Botões'),
+            ('button_hover', 'Cor ao Passar o Mouse'),
+            ('button_text', 'Cor do Texto dos Botões')
+        ]
+        
+        for field, label in color_fields:
+            color_layout = QHBoxLayout()
+            color_input = QLineEdit()
+            color_input.setPlaceholderText("#RRGGBB")
+            color_input.setMaximumWidth(100)
+            
+            color_btn = QPushButton("Selecionar")
+            color_btn.clicked.connect(lambda checked, inp=color_input: self.select_color(inp))
+            
+            color_layout.addWidget(color_input)
+            color_layout.addWidget(color_btn)
+            
+            colors_layout.addRow(label, color_layout)
+            self.color_inputs[field] = color_input
+        
+        colors_tab.setLayout(colors_layout)
+        tabs.addTab(colors_tab, "Cores")
+        
+        # Aba de fontes
+        fonts_tab = QWidget()
+        fonts_layout = QFormLayout()
+        
+        self.font_inputs = {}
+        font_fields = [
+            ('editor', 'Fonte do Editor'),
+            ('editor_size', 'Tamanho da Fonte'),
+            ('ui', 'Fonte da Interface')
+        ]
+        
+        for field, label in font_fields:
+            font_input = QLineEdit()
+            if field == 'editor_size':
+                font_input.setPlaceholderText("Ex: 11")
+            else:
+                font_input.setPlaceholderText("Ex: Consolas, 'Segoe UI'")
+            fonts_layout.addRow(label, font_input)
+            self.font_inputs[field] = font_input
+        
+        fonts_tab.setLayout(fonts_layout)
+        tabs.addTab(fonts_tab, "Fontes")
+        
+        # Aba de CSS personalizado
+        css_tab = QWidget()
+        css_layout = QVBoxLayout()
+        
+        css_label = QLabel("CSS Personalizado (adicione suas próprias regras):")
+        css_layout.addWidget(css_label)
+        
+        self.css_edit = QPlainTextEdit()
+        self.css_edit.setPlaceholderText("""
+/* Exemplo de CSS personalizado */
+QPlainTextEdit {
+    border-radius: 5px;
+    margin: 5px;
+}
+
+QPushButton {
+    font-weight: bold;
+}
+        """.strip())
+        css_layout.addWidget(self.css_edit)
+        
+        css_tab.setLayout(css_layout)
+        tabs.addTab(css_tab, "CSS Personalizado")
+        
+        layout.addWidget(tabs)
+        
+        # Botões
+        button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        button_box.accepted.connect(self.accept)
+        button_box.rejected.connect(self.reject)
+        layout.addWidget(button_box)
+        
+        self.setLayout(layout)
+    
+    def select_color(self, input_field):
+        """Abrir seletor de cores"""
+        color = QColorDialog.getColor()
+        if color.isValid():
+            input_field.setText(color.name())
+    
+    def load_theme_data(self):
+        """Carregar dados do tema para edição"""
+        theme = self.edit_theme
+        self.name_input.setText(theme.name)
+        self.name_input.setEnabled(False)  # Não pode editar nome
+        
+        # Carregar cores
+        for field, input_field in self.color_inputs.items():
+            if field in theme.colors:
+                input_field.setText(theme.colors[field])
+        
+        # Carregar fontes
+        for field, input_field in self.font_inputs.items():
+            if field in theme.fonts:
+                input_field.setText(str(theme.fonts[field]))
+        
+        # Carregar CSS
+        self.css_edit.setPlainText(theme.custom_css)
+    
+    def get_theme_data(self):
+        """Obter dados do tema do formulário"""
+        name = self.name_input.text().strip()
+        if not name:
+            QMessageBox.warning(self, "Erro", "Por favor, informe um nome para o tema.")
+            return None
+        
+        # Coletar cores
+        colors = {}
+        for field, input_field in self.color_inputs.items():
+            value = input_field.text().strip()
+            if value:
+                colors[field] = value
+        
+        # Coletar fontes
+        fonts = {}
+        for field, input_field in self.font_inputs.items():
+            value = input_field.text().strip()
+            if value:
+                fonts[field] = value
+        
+        # Coletar CSS
+        custom_css = self.css_edit.toPlainText()
+        
+        return {
+            'name': name,
+            'colors': colors,
+            'fonts': fonts,
+            'custom_css': custom_css
+        }
 
 class SimpleTextEditor(QMainWindow):
     """
@@ -60,11 +642,14 @@ class SimpleTextEditor(QMainWindow):
         self.active_plugins = []  # Lista de plugins ativos
         self.plugin_dock = None  # Dock widget para os plugins
         
+        # Gerenciador de temas
+        self.theme_manager = ThemeManager(self)
+        
         # Configurar interface
         self.init_ui()
         
-        # Aplicar estilo
-        self.apply_style()
+        # Aplicar tema padrão
+        self.theme_manager.apply_theme('Claro')
         
         # Mostrar boas-vindas
         self.show_welcome()
@@ -80,7 +665,7 @@ class SimpleTextEditor(QMainWindow):
     <meta charset="UTF-8">
     <title>Busca Personalizada</title>
     <style>
-        body { font-family: sans-serif; display: flex; justify-content: center; padding-top: 50px; }
+        body { font-family: sans-serif; display: flex; justify-content: center; padding-top: 50px; background: inherit; }
         .search-box { display: flex; gap: 10px; }
         input[type="text"] { padding: 10px; width: 300px; border: 1px solid #ccc; border-radius: 4px; }
         button { padding: 10px 20px; background-color: #4285f4; color: white; border: none; border-radius: 4px; cursor: pointer; }
@@ -205,6 +790,35 @@ class SimpleTextEditor(QMainWindow):
         self.show_plugins_action.setStatusTip("Mostrar/ocultar painel de plugins")
         self.show_plugins_action.triggered.connect(self.toggle_plugin_panel)
         plugins_menu.addAction(self.show_plugins_action)
+        
+        # Menu Temas
+        themes_menu = menubar.addMenu("🎨 &Temas")
+        
+        # Submenu de temas disponíveis
+        self.themes_menu = themes_menu.addMenu("Aplicar Tema")
+        
+        # Atualizar lista de temas
+        self.update_themes_menu()
+        
+        themes_menu.addSeparator()
+        
+        # Opção para criar novo tema
+        create_theme_action = QAction("➕ Criar Novo Tema...", self)
+        create_theme_action.setStatusTip("Criar um tema personalizado")
+        create_theme_action.triggered.connect(self.create_custom_theme)
+        themes_menu.addAction(create_theme_action)
+        
+        # Opção para editar tema
+        edit_theme_action = QAction("✏️ Editar Tema Atual...", self)
+        edit_theme_action.setStatusTip("Editar o tema atual")
+        edit_theme_action.triggered.connect(self.edit_current_theme)
+        themes_menu.addAction(edit_theme_action)
+        
+        # Opção para excluir tema
+        delete_theme_action = QAction("🗑️ Excluir Tema...", self)
+        delete_theme_action.setStatusTip("Excluir um tema personalizado")
+        delete_theme_action.triggered.connect(self.delete_theme)
+        themes_menu.addAction(delete_theme_action)
         
         # Menu Editar
         edit_menu = menubar.addMenu("&Editar")
@@ -388,6 +1002,13 @@ class SimpleTextEditor(QMainWindow):
         btn_plugin.triggered.connect(self.add_html_plugin)
         self.toolbar.addAction(btn_plugin)
         
+        # Botão de temas
+        btn_theme = QAction(self)
+        btn_theme.setText("🎨 Tema")
+        btn_theme.setStatusTip("Abrir menu de temas")
+        btn_theme.triggered.connect(self.show_theme_menu)
+        self.toolbar.addAction(btn_theme)
+        
         # ========== ÁREA CENTRAL COM SPLITTER ==========
         central = QWidget()
         self.setCentralWidget(central)
@@ -501,164 +1122,111 @@ class SimpleTextEditor(QMainWindow):
         # Label de plugins ativos
         self.plugins_label = QLabel("🔌 0 plugins")
         self.status_bar.addPermanentWidget(self.plugins_label)
+        
+        # Label do tema atual
+        self.theme_label = QLabel("🎨 Claro")
+        self.status_bar.addPermanentWidget(self.theme_label)
     
-    def apply_style(self):
-        """Aplicar estilo visual"""
-        style = """
-        QMainWindow {
-            background-color: #f5f5f5;
-        }
-        QPlainTextEdit {
-            background-color: white;
-            color: #2c3e50;
-            border: none;
-            selection-background-color: #3498db;
-            selection-color: white;
-        }
-        QToolBar {
-            background-color: #ecf0f1;
-            border: none;
-            spacing: 5px;
-            padding: 5px;
-        }
-        QToolBar QToolButton {
-            background-color: transparent;
-            border: none;
-            border-radius: 3px;
-            padding: 5px;
-        }
-        QToolBar QToolButton:hover {
-            background-color: #bdc3c7;
-        }
-        QToolBar QToolButton:pressed {
-            background-color: #95a5a6;
-        }
-        QMenuBar {
-            background-color: #34495e;
-            color: white;
-        }
-        QMenuBar::item {
-            background-color: transparent;
-            padding: 5px 10px;
-        }
-        QMenuBar::item:selected {
-            background-color: #2c3e50;
-        }
-        QMenu {
-            background-color: white;
-            border: 1px solid #bdc3c7;
-        }
-        QMenu::item {
-            padding: 5px 30px 5px 20px;
-        }
-        QMenu::item:selected {
-            background-color: #3498db;
-            color: white;
-        }
-        QStatusBar {
-            background-color: #34495e;
-            color: white;
-        }
-        #search-bar {
-            background-color: #ecf0f1;
-            border-top: 1px solid #bdc3c7;
-        }
-        QLineEdit {
-            padding: 5px;
-            border: 1px solid #bdc3c7;
-            border-radius: 3px;
-            background-color: white;
-        }
-        QLineEdit:focus {
-            border-color: #3498db;
-        }
-        QPushButton {
-            padding: 5px 10px;
-            background-color: #3498db;
-            color: white;
-            border: none;
-            border-radius: 3px;
-        }
-        QPushButton:hover {
-            background-color: #2980b9;
-        }
-        QPushButton:pressed {
-            background-color: #1c6ea4;
-        }
-        QDockWidget::title {
-            background-color: #ecf0f1;
-            padding: 5px;
-            text-align: left;
-        }
-        QTabWidget::pane {
-            border: 1px solid #bdc3c7;
-        }
-        QTabBar::tab {
-            background-color: #ecf0f1;
-            padding: 5px 10px;
-            margin-right: 2px;
-        }
-        QTabBar::tab:selected {
-            background-color: white;
-        }
-        """
-        self.setStyleSheet(style)
+    def update_themes_menu(self):
+        """Atualizar o menu de temas"""
+        self.themes_menu.clear()
+        
+        for theme_name in self.theme_manager.get_theme_names():
+            action = QAction(theme_name, self)
+            action.triggered.connect(lambda checked, name=theme_name: self.apply_theme(name))
+            self.themes_menu.addAction(action)
     
-    def show_welcome(self):
-        """Mostrar mensagem de boas-vindas"""
-        welcome_text = """# FlexNotepad - Bloco de Notas JSON com Criptografia e Plugins
-
-## 📝 Bem-vindo!
-
-Este é um editor de texto que salva arquivos em formato JSON com suporte a criptografia e plugins HTML.
-
-### ✨ Funcionalidades:
-- ✅ Salvar arquivos em formato JSON
-- ✅ Criptografia por senha (AES-256)
-- ✅ Abrir arquivos criptografados e não criptografados
-- ✅ **🔌 Suporte a plugins HTML** (adicione ferramentas auxiliares)
-- ✅ **🔍 Plugin de Busca Google incluso automaticamente!**
-- ✅ Localizar e substituir texto
-- ✅ Desfazer/Refazer
-- ✅ Quebra de linha
-- ✅ Zoom ajustável
-
-### 🔌 Como usar plugins HTML:
-- O plugin de busca do Google já está carregado no painel lateral!
-- Use **Ctrl+P** ou menu Arquivo > Importar > "Adicionar Plugin HTML..." para adicionar mais plugins
-- Cole o código HTML de uma ferramenta auxiliar
-- O plugin aparecerá no painel lateral
-- Você pode adicionar vários plugins e alternar entre eles
-
-### 🔒 Como usar a criptografia:
-- Use **Ctrl+E** ou menu Arquivo > "Salvar Criptografado..."
-- Digite uma senha forte para proteger seu arquivo
-- O arquivo será salvo com extensão .json (mas estará criptografado)
-- Ao abrir um arquivo criptografado, será solicitada a senha
-
-### 🚀 Como usar:
-- Use **Ctrl+N** para novo arquivo
-- Use **Ctrl+O** para abrir
-- Use **Ctrl+S** para salvar (sem criptografia)
-- Use **Ctrl+E** para salvar com criptografia
-- Use **Ctrl+P** para adicionar plugin
-- Use **Ctrl+F** para localizar
-- Use **Ctrl+H** para substituir
-
-### 📁 Formato JSON:
-Os arquivos são salvos com metadados incluindo:
-- Data de criação e modificação
-- Contagem de caracteres, palavras e linhas
-- Indicação de criptografia
-
-Divirta-se! 🎉
-"""
-        self.text_area.setPlainText(welcome_text)
-        self.current_file = None
-        self.is_modified = False
-        self.is_encrypted = False
-        self.update_window_title()
-        self.update_encrypt_label()
+    def apply_theme(self, theme_name):
+        """Aplicar um tema"""
+        if self.theme_manager.apply_theme(theme_name):
+            self.theme_label.setText(f"🎨 {theme_name}")
+            self.status_bar.showMessage(f"Tema '{theme_name}' aplicado!", 3000)
+            
+            # Atualizar a fonte do editor
+            theme = self.theme_manager.current_theme
+            if theme and 'editor' in theme.fonts and 'editor_size' in theme.fonts:
+                font = QFont(theme.fonts['editor'], int(theme.fonts['editor_size']))
+                self.text_area.setFont(font)
+    
+    def show_theme_menu(self):
+        """Mostrar menu de temas na posição da barra de ferramentas"""
+        menu = QMenu(self)
+        for theme_name in self.theme_manager.get_theme_names():
+            action = menu.addAction(theme_name)
+            action.triggered.connect(lambda checked, name=theme_name: self.apply_theme(name))
+        menu.exec_(QCursor.pos())
+    
+    def create_custom_theme(self):
+        """Criar um tema personalizado"""
+        dialog = ThemeDialog(self.theme_manager, self)
+        if dialog.exec_() == QDialog.Accepted:
+            theme_data = dialog.get_theme_data()
+            if theme_data:
+                success = self.theme_manager.create_custom_theme(
+                    theme_data['name'],
+                    theme_data['colors'],
+                    theme_data['fonts'],
+                    theme_data['custom_css']
+                )
+                if success:
+                    self.update_themes_menu()
+                    QMessageBox.information(self, "Sucesso", f"Tema '{theme_data['name']}' criado com sucesso!")
+                    self.apply_theme(theme_data['name'])
+                else:
+                    QMessageBox.warning(self, "Erro", "Já existe um tema com este nome.")
+    
+    def edit_current_theme(self):
+        """Editar o tema atual"""
+        if self.theme_manager.current_theme:
+            theme = self.theme_manager.current_theme
+            dialog = ThemeDialog(self.theme_manager, self, edit_theme=theme)
+            if dialog.exec_() == QDialog.Accepted:
+                # Recriar o tema com os dados editados
+                # (como o nome não pode ser editado, apenas recriamos)
+                theme_data = dialog.get_theme_data()
+                if theme_data:
+                    # Atualizar o tema existente
+                    theme.colors = theme_data['colors']
+                    theme.fonts = theme_data['fonts']
+                    theme.custom_css = theme_data['custom_css']
+                    self.theme_manager.save_theme(theme)
+                    self.apply_theme(theme.name)
+                    QMessageBox.information(self, "Sucesso", f"Tema '{theme.name}' atualizado com sucesso!")
+        else:
+            QMessageBox.warning(self, "Erro", "Nenhum tema ativo para editar.")
+    
+    def delete_theme(self):
+        """Excluir um tema personalizado"""
+        theme_names = self.theme_manager.get_theme_names()
+        # Filtrar temas que podem ser excluídos (não padrão)
+        deletable_themes = [name for name in theme_names if name not in ['Claro', 'Escuro', 'Solarized', 'Monokai']]
+        
+        if not deletable_themes:
+            QMessageBox.information(self, "Informação", "Não há temas personalizados para excluir.")
+            return
+        
+        theme_name, ok = QInputDialog.getItem(
+            self, "Excluir Tema",
+            "Selecione o tema para excluir:",
+            deletable_themes, 0, False
+        )
+        
+        if ok and theme_name:
+            reply = QMessageBox.question(
+                self, "Confirmar",
+                f"Tem certeza que deseja excluir o tema '{theme_name}'?",
+                QMessageBox.Yes | QMessageBox.No
+            )
+            
+            if reply == QMessageBox.Yes:
+                if self.theme_manager.delete_theme(theme_name):
+                    self.update_themes_menu()
+                    # Se o tema excluído era o atual, voltar para o tema Claro
+                    if self.theme_manager.current_theme and self.theme_manager.current_theme.name == theme_name:
+                        self.apply_theme('Claro')
+                    QMessageBox.information(self, "Sucesso", f"Tema '{theme_name}' excluído com sucesso!")
+                else:
+                    QMessageBox.warning(self, "Erro", "Não foi possível excluir o tema.")
     
     # ========== FUNÇÕES DE PLUGIN ==========
     
@@ -1535,14 +2103,81 @@ Exemplo de plugin HTML:
     
     # ========== FUNÇÕES DE AJUDA ==========
     
+    def show_welcome(self):
+        """Mostrar mensagem de boas-vindas"""
+        welcome_text = """# FlexNotepad - Bloco de Notas JSON com Criptografia, Plugins e Temas Personalizáveis
+
+## 📝 Bem-vindo!
+
+Este é um editor de texto que salva arquivos em formato JSON com suporte a criptografia, plugins HTML e temas personalizáveis.
+
+### ✨ Funcionalidades:
+- ✅ Salvar arquivos em formato JSON
+- ✅ Criptografia por senha (AES-256)
+- ✅ Abrir arquivos criptografados e não criptografados
+- ✅ **🔌 Suporte a plugins HTML** (adicione ferramentas auxiliares)
+- ✅ **🎨 Temas personalizáveis** (crie seu próprio visual!)
+- ✅ **🔍 Plugin de Busca Google incluso automaticamente!**
+- ✅ Localizar e substituir texto
+- ✅ Desfazer/Refazer
+- ✅ Quebra de linha
+- ✅ Zoom ajustável
+
+### 🎨 Como usar os temas:
+- Use o menu "Temas" para escolher entre os temas prontos
+- Crie seu próprio tema personalizado com cores e fontes
+- Edite temas existentes
+- Exclua temas personalizados quando não precisar mais
+
+### 🔌 Como usar plugins HTML:
+- O plugin de busca do Google já está carregado no painel lateral!
+- Use **Ctrl+P** ou menu Arquivo > Importar > "Adicionar Plugin HTML..." para adicionar mais plugins
+- Cole o código HTML de uma ferramenta auxiliar
+- O plugin aparecerá no painel lateral
+- Você pode adicionar vários plugins e alternar entre eles
+
+### 🔒 Como usar a criptografia:
+- Use **Ctrl+E** ou menu Arquivo > "Salvar Criptografado..."
+- Digite uma senha forte para proteger seu arquivo
+- O arquivo será salvo com extensão .json (mas estará criptografado)
+- Ao abrir um arquivo criptografado, será solicitada a senha
+
+### 🚀 Como usar:
+- Use **Ctrl+N** para novo arquivo
+- Use **Ctrl+O** para abrir
+- Use **Ctrl+S** para salvar (sem criptografia)
+- Use **Ctrl+E** para salvar com criptografia
+- Use **Ctrl+P** para adicionar plugin
+- Use **Ctrl+F** para localizar
+- Use **Ctrl+H** para substituir
+
+### 📁 Formato JSON:
+Os arquivos são salvos com metadados incluindo:
+- Data de criação e modificação
+- Contagem de caracteres, palavras e linhas
+- Indicação de criptografia
+
+Divirta-se! 🎉
+"""
+        self.text_area.setPlainText(welcome_text)
+        self.current_file = None
+        self.is_modified = False
+        self.is_encrypted = False
+        self.update_window_title()
+        self.update_encrypt_label()
+    
     def show_about(self):
         """Mostrar diálogo sobre"""
         crypto_status = "✅ Disponível" if CRYPTO_AVAILABLE else "❌ Não disponível (instale cryptography)"
         
         about_text = f"""
         <h2>Flex Notepad</h2>
-        <p><b>Versão:</b> 3.0.0</p>
-        <p>Um editor de texto que salva em formato JSON com suporte a criptografia e plugins HTML.</p>
+        <p><b>Versão:</b> 4.0.0</p>
+        <p>Um editor de texto que salva em formato JSON com suporte a criptografia, plugins HTML e temas personalizáveis.</p>
+        
+        <h3>🎨 Temas:</h3>
+        <p>Crie seus próprios temas com cores e fontes personalizadas!</p>
+        <p><b>Temas inclusos:</b> Claro, Escuro, Solarized, Monokai</p>
         
         <h3>🔌 Plugins:</h3>
         <p>Adicione ferramentas HTML auxiliares para ajudar no editor!</p>
@@ -1559,6 +2194,7 @@ Exemplo de plugin HTML:
             <li>Salvar arquivos em JSON com metadados</li>
             <li>Criptografia por senha (AES-256)</li>
             <li><b>Plugins HTML personalizáveis</b></li>
+            <li><b>Temas personalizáveis (cores, fontes, CSS customizado)</b></li>
             <li><b>Plugin de Busca Google incluso automaticamente</b></li>
             <li>Abrir arquivos criptografados e não criptografados</li>
             <li>Localizar e substituir texto</li>
@@ -1596,12 +2232,12 @@ class StartupDialog(QDialog):
         super().__init__()
         self.setWindowTitle("FlexNotepad")
         self.setModal(True)
-        self.setGeometry(400, 300, 500, 300)
+        self.setGeometry(400, 300, 500, 350)
         
         layout = QVBoxLayout()
         
         # Título
-        title = QLabel("📝 FLEXNOTEPAD\ncom Criptografia 🔒 e Plugins 🔌")
+        title = QLabel("📝 FLEXNOTEPAD\ncom Criptografia 🔒, Plugins 🔌 e Temas 🎨")
         title.setStyleSheet("""
             font-size: 24px;
             font-weight: bold;
@@ -1671,6 +2307,24 @@ class StartupDialog(QDialog):
         btn_plugin.clicked.connect(self.add_plugin)
         options_layout.addWidget(btn_plugin)
         
+        btn_theme = QPushButton("🎨 Criar Tema")
+        btn_theme.setStyleSheet("""
+            QPushButton {
+                font-size: 14px;
+                padding: 15px;
+                background-color: #e67e22;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                margin: 5px;
+            }
+            QPushButton:hover {
+                background-color: #d35400;
+            }
+        """)
+        btn_theme.clicked.connect(self.create_theme)
+        options_layout.addWidget(btn_theme)
+        
         if not CRYPTO_AVAILABLE:
             warning = QLabel("⚠️ Funcionalidade de criptografia não disponível.\nInstale: pip install cryptography")
             warning.setStyleSheet("color: orange; padding: 10px;")
@@ -1701,6 +2355,7 @@ class StartupDialog(QDialog):
         self.setLayout(layout)
         self.open_file_requested = False
         self.add_plugin_requested = False
+        self.create_theme_requested = False
     
     def open_file(self):
         """Abrir arquivo diretamente"""
@@ -1710,6 +2365,11 @@ class StartupDialog(QDialog):
     def add_plugin(self):
         """Adicionar plugin diretamente"""
         self.add_plugin_requested = True
+        self.accept()
+    
+    def create_theme(self):
+        """Criar tema diretamente"""
+        self.create_theme_requested = True
         self.accept()
 
 
@@ -1731,6 +2391,8 @@ def main():
             editor.open_file()
         if dialog.add_plugin_requested:
             editor.add_html_plugin()
+        if dialog.create_theme_requested:
+            editor.create_custom_theme()
         editor.show()
         sys.exit(app.exec_())
     else:
