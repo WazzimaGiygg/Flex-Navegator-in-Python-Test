@@ -1,0 +1,360 @@
+/* Estilo Cartoon - Divertido e Colorido */
+QMainWindow, QDialog {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #FFE6B0, stop:1 #FFD966);
+    background-color: #FFE6B0;
+}
+
+/* TabBar estilo Cartoon */
+QTabWidget::pane {
+    border: 3px solid #000000;
+    border-radius: 15px;
+    background-color: #FFF9E6;
+}
+
+QTabBar::tab {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #FFB347, stop:1 #FF8C00);
+    color: #000000;
+    padding: 10px 20px;
+    margin: 0px 3px;
+    border: 2px solid #000000;
+    border-radius: 20px 20px 0 0;
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+QTabBar::tab:selected {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #FFD966, stop:1 #FFB347);
+    transform: scale(1.05);
+    margin-bottom: -2px;
+}
+
+QTabBar::tab:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #FFA559, stop:1 #FF6B00);
+    transform: scale(1.02);
+}
+
+/* LineEdit estilo Cartoon */
+QLineEdit {
+    padding: 10px 15px;
+    border: 3px solid #000000;
+    border-radius: 25px;
+    background-color: #FFFFFF;
+    color: #000000;
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+QLineEdit:focus {
+    border: 3px solid #FF6B00;
+    background-color: #FFF9E6;
+    box-shadow: 0 0 10px rgba(255, 107, 0, 0.5);
+}
+
+/* PushButton estilo Cartoon */
+QPushButton {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #FF6B6B, stop:1 #FF4444);
+    border: 3px solid #000000;
+    border-radius: 30px;
+    color: #FFFFFF;
+    padding: 10px 20px;
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive;
+    font-size: 16px;
+    font-weight: bold;
+    text-shadow: 2px 2px 0px #AA0000;
+}
+
+QPushButton:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #FF8A8A, stop:1 #FF6666);
+    transform: scale(1.05);
+}
+
+QPushButton:pressed {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #CC3333, stop:1 #FF4444);
+    transform: scale(0.95);
+}
+
+/* MenuBar estilo Cartoon */
+QMenuBar {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #FFD966, stop:1 #FFB347);
+    color: #000000;
+    border-bottom: 3px solid #000000;
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+QMenuBar::item {
+    padding: 8px 15px;
+    background: transparent;
+    border-radius: 15px;
+}
+
+QMenuBar::item:selected {
+    background-color: #FF6B6B;
+    color: #FFFFFF;
+    border-radius: 15px;
+}
+
+/* Menu estilo Cartoon */
+QMenu {
+    background-color: #FFF9E6;
+    color: #000000;
+    border: 3px solid #000000;
+    border-radius: 15px;
+    padding: 5px;
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive;
+    font-size: 12px;
+}
+
+QMenu::item {
+    padding: 8px 30px 8px 25px;
+    margin: 2px;
+    border-radius: 10px;
+}
+
+QMenu::item:selected {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #FFB347, stop:1 #FF8C00);
+    color: #FFFFFF;
+}
+
+QMenu::separator {
+    height: 2px;
+    background-color: #FFB347;
+    margin: 5px 10px;
+    border-radius: 1px;
+}
+
+/* GroupBox estilo Cartoon */
+QGroupBox {
+    color: #000000;
+    border: 3px solid #000000;
+    border-radius: 20px;
+    margin-top: 15px;
+    padding-top: 15px;
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive;
+    font-size: 14px;
+    font-weight: bold;
+    background-color: rgba(255, 249, 230, 0.5);
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    left: 15px;
+    padding: 0 10px;
+    color: #FF6B6B;
+    background-color: #FFF9E6;
+    border-radius: 15px;
+}
+
+/* Label estilo Cartoon */
+QLabel {
+    color: #000000;
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+/* ScrollBar estilo Cartoon */
+QScrollBar:vertical {
+    background: #FFE6B0;
+    width: 20px;
+    border: 2px solid #000000;
+    border-radius: 10px;
+}
+
+QScrollBar::handle:vertical {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #FFB347, stop:1 #FF8C00);
+    border-radius: 8px;
+    min-height: 30px;
+    margin: 2px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #FFA559, stop:1 #FF6B00);
+}
+
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 20px;
+    background: #FFD966;
+    border: 2px solid #000000;
+    border-radius: 10px;
+}
+
+/* ComboBox estilo Cartoon */
+QComboBox {
+    padding: 8px 15px;
+    border: 3px solid #000000;
+    border-radius: 25px;
+    background-color: #FFFFFF;
+    color: #000000;
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+QComboBox:hover {
+    background-color: #FFF9E6;
+    border-color: #FF6B00;
+}
+
+QComboBox::drop-down {
+    border: none;
+    width: 30px;
+}
+
+QComboBox::down-arrow {
+    image: none;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 8px solid #FF6B6B;
+    width: 0;
+    height: 0;
+}
+
+/* CheckBox estilo Cartoon */
+QCheckBox {
+    color: #000000;
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive;
+    font-size: 13px;
+    font-weight: bold;
+    spacing: 10px;
+}
+
+QCheckBox::indicator {
+    width: 22px;
+    height: 22px;
+    border-radius: 8px;
+    border: 3px solid #000000;
+    background: #FFFFFF;
+}
+
+QCheckBox::indicator:checked {
+    background: #FF6B6B;
+    image: url(none);
+}
+
+/* RadioButton estilo Cartoon */
+QRadioButton {
+    color: #000000;
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive;
+    font-size: 13px;
+    font-weight: bold;
+    spacing: 10px;
+}
+
+QRadioButton::indicator {
+    width: 20px;
+    height: 20px;
+    border-radius: 12px;
+    border: 3px solid #000000;
+    background: #FFFFFF;
+}
+
+QRadioButton::indicator:checked {
+    background: #FF6B6B;
+    border: 3px solid #000000;
+}
+
+/* Slider estilo Cartoon */
+QSlider::groove:horizontal {
+    height: 12px;
+    background: #FFD966;
+    border: 2px solid #000000;
+    border-radius: 10px;
+}
+
+QSlider::handle:horizontal {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #FF6B6B, stop:1 #FF4444);
+    width: 25px;
+    height: 25px;
+    border: 3px solid #000000;
+    border-radius: 15px;
+    margin: -8px 0;
+}
+
+QSlider::handle:horizontal:hover {
+    transform: scale(1.1);
+}
+
+QSlider::sub-page:horizontal {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                                stop:0 #FFB347, stop:1 #FF6B6B);
+    border-radius: 10px;
+}
+
+/* ProgressBar estilo Cartoon */
+QProgressBar {
+    border: 3px solid #000000;
+    border-radius: 15px;
+    background-color: #FFFFFF;
+    text-align: center;
+    color: #000000;
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+QProgressBar::chunk {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                                stop:0 #FF6B6B, stop:1 #FFB347);
+    border-radius: 12px;
+}
+
+/* SpinBox estilo Cartoon */
+QSpinBox {
+    padding: 8px 15px;
+    border: 3px solid #000000;
+    border-radius: 25px;
+    background-color: #FFFFFF;
+    color: #000000;
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* ToolBar estilo Cartoon */
+QToolBar {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #FFD966, stop:1 #FFB347);
+    border: 2px solid #000000;
+    border-radius: 15px;
+    spacing: 5px;
+    padding: 5px;
+}
+
+/* StatusBar estilo Cartoon */
+QStatusBar {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #FFD966, stop:1 #FFB347);
+    color: #000000;
+    border-top: 3px solid #000000;
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+/* ToolTip estilo Cartoon */
+QToolTip {
+    background-color: #FFF9E6;
+    color: #000000;
+    border: 2px solid #000000;
+    border-radius: 15px;
+    padding: 5px 10px;
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive;
+    font-size: 11px;
+    font-weight: bold;
+}

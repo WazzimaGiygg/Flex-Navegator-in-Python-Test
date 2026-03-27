@@ -1,0 +1,374 @@
+/* Estilo Windows XP - Tema Luna */
+QMainWindow, QDialog {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #3A6EA5, stop:1 #215B8E);
+    background-color: #3A6EA5;
+}
+
+/* TabBar estilo Windows XP */
+QTabWidget::pane {
+    border: 1px solid #003C74;
+    background-color: #ECE9D8;
+}
+
+QTabBar::tab {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #F0F0F0, stop:0.5 #E3E3E3, stop:1 #D1D1D1);
+    color: #1E395B;
+    padding: 6px 15px;
+    margin: 0px 2px 0px 0px;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    font-family: 'Tahoma', 'Segoe UI', 'Microsoft Sans Serif', sans-serif;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+QTabBar::tab:selected {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #FFFFFF, stop:0.5 #F5F5F5, stop:1 #ECE9D8);
+    color: #003C74;
+    border: 1px solid #003C74;
+    border-bottom-color: #ECE9D8;
+    margin-bottom: -1px;
+}
+
+QTabBar::tab:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #FFF9E0, stop:0.5 #FFF0C0, stop:1 #FFE8A0);
+}
+
+/* LineEdit estilo Windows XP */
+QLineEdit {
+    padding: 4px 6px;
+    border: 1px solid #7F9DB9;
+    border-radius: 3px;
+    background-color: #FFFFFF;
+    color: #000000;
+    font-family: 'Tahoma', 'Segoe UI', 'Microsoft Sans Serif', sans-serif;
+    font-size: 11px;
+}
+
+QLineEdit:focus {
+    border: 1px solid #3A6EA5;
+    background-color: #FFF9E0;
+}
+
+/* PushButton estilo Windows XP */
+QPushButton {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #F9F9F9, stop:0.5 #E3E3E3, stop:1 #C9C9C9);
+    border: 1px solid #003C74;
+    border-radius: 5px;
+    color: #1E395B;
+    padding: 6px 16px;
+    font-family: 'Tahoma', 'Segoe UI', 'Microsoft Sans Serif', sans-serif;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+QPushButton:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #FFFAE0, stop:0.5 #FFF0C0, stop:1 #FFE8A0);
+    border: 1px solid #F29400;
+}
+
+QPushButton:pressed {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #C9C9C9, stop:0.5 #E3E3E3, stop:1 #F9F9F9);
+    padding: 7px 15px 5px 17px;
+}
+
+QPushButton:default {
+    border: 2px solid #003C74;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #FFFAE0, stop:0.5 #FFF0C0, stop:1 #FFE8A0);
+}
+
+/* MenuBar estilo Windows XP */
+QMenuBar {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #F0F0F0, stop:1 #E0E0E0);
+    color: #1E395B;
+    border-bottom: 1px solid #003C74;
+    font-family: 'Tahoma', 'Segoe UI', 'Microsoft Sans Serif', sans-serif;
+    font-size: 11px;
+}
+
+QMenuBar::item {
+    padding: 4px 10px;
+    background: transparent;
+}
+
+QMenuBar::item:selected {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #3A6EA5, stop:1 #215B8E);
+    color: #FFFFFF;
+    border-radius: 3px;
+}
+
+/* Menu estilo Windows XP */
+QMenu {
+    background-color: #ECE9D8;
+    color: #1E395B;
+    border: 1px solid #003C74;
+    padding: 2px 0px;
+    font-family: 'Tahoma', 'Segoe UI', 'Microsoft Sans Serif', sans-serif;
+    font-size: 11px;
+}
+
+QMenu::item {
+    padding: 4px 30px 4px 25px;
+    margin: 0px;
+}
+
+QMenu::item:selected {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #3A6EA5, stop:1 #215B8E);
+    color: #FFFFFF;
+}
+
+QMenu::separator {
+    height: 1px;
+    background-color: #A7ABB3;
+    margin: 4px 0px;
+}
+
+/* GroupBox estilo Windows XP */
+QGroupBox {
+    color: #1E395B;
+    border: 1px solid #7F9DB9;
+    border-radius: 5px;
+    margin-top: 10px;
+    padding-top: 8px;
+    font-family: 'Tahoma', 'Segoe UI', 'Microsoft Sans Serif', sans-serif;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    left: 10px;
+    padding: 0 5px 0 5px;
+    color: #1E395B;
+    background-color: #ECE9D8;
+}
+
+/* Label estilo Windows XP */
+QLabel {
+    color: #FFFFFF;
+    font-family: 'Tahoma', 'Segoe UI', 'Microsoft Sans Serif', sans-serif;
+    font-size: 11px;
+}
+
+/* ScrollBar estilo Windows XP */
+QScrollBar:vertical {
+    background: #ECE9D8;
+    width: 16px;
+    border: 1px solid #7F9DB9;
+    border-radius: 3px;
+}
+
+QScrollBar::handle:vertical {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                                stop:0 #E3E3E3, stop:0.5 #C9C9C9, stop:1 #B5B5B5);
+    border-radius: 3px;
+    min-height: 20px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                                stop:0 #FFFAE0, stop:0.5 #FFF0C0, stop:1 #FFE8A0);
+}
+
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 16px;
+    background: #ECE9D8;
+    border: 1px solid #7F9DB9;
+    border-radius: 3px;
+}
+
+/* ComboBox estilo Windows XP */
+QComboBox {
+    padding: 4px 6px;
+    border: 1px solid #7F9DB9;
+    border-radius: 3px;
+    background-color: #FFFFFF;
+    color: #000000;
+    font-family: 'Tahoma', 'Segoe UI', 'Microsoft Sans Serif', sans-serif;
+    font-size: 11px;
+}
+
+QComboBox:hover {
+    border: 1px solid #F29400;
+}
+
+QComboBox::drop-down {
+    border: none;
+    width: 18px;
+}
+
+QComboBox::down-arrow {
+    image: none;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 5px solid #1E395B;
+    width: 0;
+    height: 0;
+}
+
+/* CheckBox estilo Windows XP */
+QCheckBox {
+    color: #FFFFFF;
+    font-family: 'Tahoma', 'Segoe UI', 'Microsoft Sans Serif', sans-serif;
+    font-size: 11px;
+    spacing: 8px;
+}
+
+QCheckBox::indicator {
+    width: 13px;
+    height: 13px;
+    border: 1px solid #7F9DB9;
+    background: #FFFFFF;
+}
+
+QCheckBox::indicator:checked {
+    background: #3A6EA5;
+    image: url(none);
+}
+
+QCheckBox::indicator:hover {
+    border: 1px solid #F29400;
+}
+
+/* RadioButton estilo Windows XP */
+QRadioButton {
+    color: #FFFFFF;
+    font-family: 'Tahoma', 'Segoe UI', 'Microsoft Sans Serif', sans-serif;
+    font-size: 11px;
+    spacing: 8px;
+}
+
+QRadioButton::indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 6px;
+    border: 1px solid #7F9DB9;
+    background: #FFFFFF;
+}
+
+QRadioButton::indicator:checked {
+    background: #3A6EA5;
+    border: 2px solid #FFFFFF;
+}
+
+/* Slider estilo Windows XP */
+QSlider::groove:horizontal {
+    height: 4px;
+    background: #ECE9D8;
+    border: 1px solid #7F9DB9;
+    border-radius: 2px;
+}
+
+QSlider::handle:horizontal {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #F9F9F9, stop:0.5 #E3E3E3, stop:1 #C9C9C9);
+    width: 12px;
+    height: 12px;
+    border: 1px solid #003C74;
+    border-radius: 6px;
+    margin: -5px 0;
+}
+
+QSlider::handle:horizontal:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #FFFAE0, stop:0.5 #FFF0C0, stop:1 #FFE8A0);
+}
+
+QSlider::sub-page:horizontal {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                                stop:0 #3A6EA5, stop:1 #215B8E);
+    border-radius: 2px;
+}
+
+/* ProgressBar estilo Windows XP */
+QProgressBar {
+    border: 1px solid #7F9DB9;
+    border-radius: 3px;
+    background-color: #ECE9D8;
+    text-align: center;
+    color: #1E395B;
+    font-family: 'Tahoma', 'Segoe UI', 'Microsoft Sans Serif', sans-serif;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+QProgressBar::chunk {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                                stop:0 #3A6EA5, stop:0.5 #4F81BD, stop:1 #215B8E);
+    border-radius: 2px;
+}
+
+/* SpinBox estilo Windows XP */
+QSpinBox {
+    padding: 4px 6px;
+    border: 1px solid #7F9DB9;
+    border-radius: 3px;
+    background-color: #FFFFFF;
+    color: #000000;
+    font-family: 'Tahoma', 'Segoe UI', 'Microsoft Sans Serif', sans-serif;
+    font-size: 11px;
+}
+
+/* ToolBar estilo Windows XP */
+QToolBar {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #F0F0F0, stop:1 #E0E0E0);
+    border: 1px solid #7F9DB9;
+    border-radius: 3px;
+    spacing: 4px;
+    padding: 2px;
+}
+
+/* StatusBar estilo Windows XP */
+QStatusBar {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #F0F0F0, stop:1 #E0E0E0);
+    color: #1E395B;
+    border-top: 1px solid #7F9DB9;
+    font-family: 'Tahoma', 'Segoe UI', 'Microsoft Sans Serif', sans-serif;
+    font-size: 11px;
+}
+
+QStatusBar::item {
+    border: 1px solid #7F9DB9;
+    border-radius: 2px;
+}
+
+/* ToolTip estilo Windows XP */
+QToolTip {
+    background-color: #FFFFE0;
+    color: #000000;
+    border: 1px solid #000000;
+    padding: 2px 5px;
+    font-family: 'Tahoma', 'Segoe UI', 'Microsoft Sans Serif', sans-serif;
+    font-size: 11px;
+}
+
+/* TreeView e ListView estilo Windows XP */
+QTreeView, QListView, QTableView {
+    background-color: #FFFFFF;
+    alternate-background-color: #F5F5F5;
+    selection-background-color: #3A6EA5;
+    selection-color: #FFFFFF;
+    font-family: 'Tahoma', 'Segoe UI', 'Microsoft Sans Serif', sans-serif;
+    font-size: 11px;
+}
+
+QHeaderView::section {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #F0F0F0, stop:0.5 #E3E3E3, stop:1 #D1D1D1);
+    padding: 4px;
+    border: 1px solid #7F9DB9;
+    font-weight: bold;
+}

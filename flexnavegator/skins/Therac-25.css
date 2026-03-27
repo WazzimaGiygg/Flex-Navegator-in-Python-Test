@@ -1,0 +1,477 @@
+/*
+ * Estilo Therac-25 - Interface de Equipamento Médico Industrial
+ * Inspirado nos terminais e consoles de radioterapia dos anos 1980
+ * Características: CRT verde, displays de 7 segmentos, botões físicos, metal escovado
+ * Aviso: Estilo puramente estético - sem relação com os aspectos trágicos do equipamento
+ */
+
+/* ==================== FUNDO PRINCIPAL (PAINEL DE METAL) ==================== */
+QMainWindow, QDialog {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #2A2A2A, stop:0.5 #1E1E1E, stop:1 #151515);
+    background-color: #1E1E1E;
+}
+
+/* ==================== TAB BAR (CHAVES SELEtorAS INDUSTRIAIS) ==================== */
+QTabWidget::pane {
+    border: 3px solid #4A4A4A;
+    background-color: #0A0A0A;
+    border-radius: 4px;
+}
+
+QTabBar::tab {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #3A3A3A, stop:0.5 #2A2A2A, stop:1 #1A1A1A);
+    color: #7FFF00;
+    padding: 10px 20px;
+    margin: 0px 2px;
+    border: 2px solid #4A4A4A;
+    border-bottom: none;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    font-family: 'Courier New', 'VT323', 'IBM EGA 8x8', monospace;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+QTabBar::tab:selected {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #2A5A2A, stop:0.5 #1A3A1A, stop:1 #0A2A0A);
+    color: #9FFF4F;
+    border-color: #7FFF00;
+    border-bottom-color: #0A0A0A;
+}
+
+QTabBar::tab:hover:!selected {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #4A4A4A, stop:0.5 #3A3A3A, stop:1 #2A2A2A);
+    color: #BFFF4F;
+}
+
+/* ==================== LINE EDIT (DISPLAY CRT) ==================== */
+QLineEdit {
+    padding: 10px 12px;
+    border: 3px inset #4A4A4A;
+    border-radius: 2px;
+    background-color: #000000;
+    color: #7FFF00;
+    font-family: 'Courier New', 'VT323', 'IBM EGA 8x8', monospace;
+    font-size: 14px;
+    font-weight: bold;
+    selection-background-color: #3A6A3A;
+    selection-color: #FFFFFF;
+}
+
+QLineEdit:focus {
+    border: 3px solid #7FFF00;
+    background-color: #0A0A0A;
+}
+
+/* ==================== PUSH BUTTON (BOTÕES FÍSICOS) ==================== */
+QPushButton {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #4A4A4A, stop:0.4 #3A3A3A, stop:0.6 #2A2A2A, stop:1 #1A1A1A);
+    border: 2px solid #6A6A6A;
+    border-radius: 6px;
+    color: #DDDDDD;
+    padding: 8px 20px;
+    font-family: 'Courier New', 'VT323', monospace;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+QPushButton:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #5A5A5A, stop:0.4 #4A4A4A, stop:0.6 #3A3A3A, stop:1 #2A2A2A);
+    border-color: #8A8A8A;
+    color: #FFFFFF;
+}
+
+QPushButton:pressed {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #2A2A2A, stop:0.4 #1A1A1A, stop:0.6 #151515, stop:1 #0A0A0A);
+    padding: 9px 19px 7px 21px;
+    border-color: #4A4A4A;
+}
+
+/* Botões de Emergência (VERMELHO) */
+QPushButton[emergency="true"] {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #8B3A3A, stop:0.4 #6A2A2A, stop:0.6 #4A1A1A, stop:1 #2A0A0A);
+    border-color: #AA4A4A;
+    color: #FF6A6A;
+}
+
+QPushButton[emergency="true"]:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #AA4A4A, stop:0.4 #8A3A3A, stop:0.6 #6A2A2A, stop:1 #4A1A1A);
+    color: #FF8A8A;
+}
+
+/* Botões de Confirmação (VERDE) */
+QPushButton[confirm="true"] {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #2A6A2A, stop:0.4 #1A4A1A, stop:0.6 #0A3A0A, stop:1 #052005);
+    border-color: #4A8A4A;
+    color: #7FFF00;
+}
+
+QPushButton[confirm="true"]:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #3A8A3A, stop:0.4 #2A6A2A, stop:0.6 #1A4A1A, stop:1 #0A3A0A);
+    color: #9FFF4F;
+}
+
+/* ==================== MENU BAR (PAINEL DE CONTROLE) ==================== */
+QMenuBar {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #2A2A2A, stop:1 #1A1A1A);
+    color: #7FFF00;
+    border-bottom: 2px solid #4A4A4A;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+QMenuBar::item {
+    padding: 6px 12px;
+    background: transparent;
+    border-radius: 3px;
+}
+
+QMenuBar::item:selected {
+    background-color: #2A5A2A;
+    color: #9FFF4F;
+}
+
+/* ==================== MENU (SUSPENSO) ==================== */
+QMenu {
+    background-color: #1A1A1A;
+    color: #7FFF00;
+    border: 2px solid #4A4A4A;
+    padding: 4px 0px;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+}
+
+QMenu::item {
+    padding: 6px 30px 6px 25px;
+    margin: 0px;
+}
+
+QMenu::item:selected {
+    background-color: #2A5A2A;
+    color: #9FFF4F;
+}
+
+QMenu::separator {
+    height: 1px;
+    background-color: #4A4A4A;
+    margin: 4px 8px;
+}
+
+/* ==================== GROUP BOX (PAINEL DE INSTRUMENTOS) ==================== */
+QGroupBox {
+    color: #7FFF00;
+    border: 2px solid #4A4A4A;
+    border-radius: 6px;
+    margin-top: 12px;
+    padding-top: 10px;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    left: 12px;
+    padding: 0 8px;
+    color: #9FFF4F;
+    background-color: #1A1A1A;
+}
+
+/* ==================== LABEL (DISPLAYS DIGITAIS) ==================== */
+QLabel {
+    color: #7FFF00;
+    font-family: 'Courier New', 'VT323', monospace;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+QLabel[display="true"] {
+    background-color: #000000;
+    border: 2px inset #4A4A4A;
+    padding: 6px 12px;
+    font-family: 'VT323', 'Courier New', monospace;
+    font-size: 24px;
+    letter-spacing: 2px;
+}
+
+QLabel[warning="true"] {
+    color: #FF6A6A;
+    background-color: #2A0A0A;
+    border: 2px solid #AA4A4A;
+    padding: 4px 8px;
+    font-weight: bold;
+}
+
+QLabel[status="true"] {
+    color: #7FFF00;
+    background-color: #0A1A0A;
+    border: 1px solid #3A8A3A;
+    padding: 4px 8px;
+    font-size: 10px;
+}
+
+/* ==================== SCROLL BAR (CONTROLES ANALÓGICOS) ==================== */
+QScrollBar:vertical {
+    background: #1A1A1A;
+    width: 14px;
+    border: 2px solid #4A4A4A;
+    border-radius: 4px;
+}
+
+QScrollBar::handle:vertical {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                                stop:0 #4A4A4A, stop:0.5 #3A3A3A, stop:1 #2A2A2A);
+    border-radius: 3px;
+    min-height: 30px;
+    margin: 2px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                                stop:0 #5A5A5A, stop:0.5 #4A4A4A, stop:1 #3A3A3A);
+}
+
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 14px;
+    background: #2A2A2A;
+    border: 1px solid #4A4A4A;
+}
+
+/* ==================== COMBO BOX (SELETORES DE PARÂMETROS) ==================== */
+QComboBox {
+    padding: 8px 12px;
+    border: 2px solid #4A4A4A;
+    border-radius: 4px;
+    background-color: #000000;
+    color: #7FFF00;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+QComboBox:hover {
+    border-color: #7FFF00;
+}
+
+QComboBox::drop-down {
+    border: none;
+    width: 24px;
+}
+
+QComboBox::down-arrow {
+    image: none;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 6px solid #7FFF00;
+    width: 0;
+    height: 0;
+}
+
+QComboBox QAbstractItemView {
+    background-color: #0A0A0A;
+    color: #7FFF00;
+    border: 2px solid #4A4A4A;
+    selection-background-color: #2A5A2A;
+}
+
+/* ==================== CHECK BOX (CHAVES LIGA/DESLIGA) ==================== */
+QCheckBox {
+    color: #7FFF00;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    font-weight: bold;
+    spacing: 8px;
+}
+
+QCheckBox::indicator {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #4A4A4A;
+    background: #000000;
+}
+
+QCheckBox::indicator:checked {
+    background: #2A5A2A;
+    border-color: #7FFF00;
+}
+
+QCheckBox::indicator:hover {
+    border-color: #7FFF00;
+}
+
+/* ==================== RADIO BUTTON (BOTÕES DE SELEÇÃO) ==================== */
+QRadioButton {
+    color: #7FFF00;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    font-weight: bold;
+    spacing: 8px;
+}
+
+QRadioButton::indicator {
+    width: 14px;
+    height: 14px;
+    border-radius: 7px;
+    border: 2px solid #4A4A4A;
+    background: #000000;
+}
+
+QRadioButton::indicator:checked {
+    background: #2A5A2A;
+    border-color: #7FFF00;
+}
+
+/* ==================== SLIDER (CONTROLES ANALÓGICOS) ==================== */
+QSlider::groove:horizontal {
+    height: 6px;
+    background: #1A1A1A;
+    border: 1px solid #4A4A4A;
+    border-radius: 3px;
+}
+
+QSlider::handle:horizontal {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #5A5A5A, stop:0.5 #4A4A4A, stop:1 #3A3A3A);
+    width: 18px;
+    height: 18px;
+    border: 2px solid #7FFF00;
+    border-radius: 9px;
+    margin: -7px 0;
+}
+
+QSlider::handle:horizontal:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #6A6A6A, stop:0.5 #5A5A5A, stop:1 #4A4A4A);
+}
+
+QSlider::sub-page:horizontal {
+    background: #2A5A2A;
+    border-radius: 3px;
+}
+
+/* ==================== PROGRESS BAR (MEDIDORES) ==================== */
+QProgressBar {
+    border: 2px solid #4A4A4A;
+    border-radius: 3px;
+    background-color: #000000;
+    text-align: center;
+    color: #7FFF00;
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+QProgressBar::chunk {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                                stop:0 #1A5A1A, stop:0.5 #2A6A2A, stop:1 #3A7A3A);
+}
+
+/* ==================== SPIN BOX (ENTRADA NUMÉRICA) ==================== */
+QSpinBox {
+    padding: 8px 12px;
+    border: 2px solid #4A4A4A;
+    border-radius: 4px;
+    background-color: #000000;
+    color: #7FFF00;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+QSpinBox:focus {
+    border-color: #7FFF00;
+}
+
+/* ==================== TOOL BAR (PAINEL DE FERRAMENTAS) ==================== */
+QToolBar {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #2A2A2A, stop:1 #1A1A1A);
+    border: 2px solid #4A4A4A;
+    border-radius: 4px;
+    spacing: 4px;
+    padding: 4px;
+}
+
+QToolBar QToolButton {
+    background: #2A2A2A;
+    border: 1px solid #4A4A4A;
+    border-radius: 3px;
+    padding: 4px;
+}
+
+QToolBar QToolButton:hover {
+    background: #3A3A3A;
+    border-color: #7FFF00;
+}
+
+/* ==================== STATUS BAR (LINHA DE STATUS) ==================== */
+QStatusBar {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #1A1A1A, stop:1 #0A0A0A);
+    color: #7FFF00;
+    border-top: 2px solid #4A4A4A;
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+}
+
+/* ==================== TOOL TIP (AJUDA TÉCNICA) ==================== */
+QToolTip {
+    background-color: #0A0A0A;
+    color: #7FFF00;
+    border: 2px solid #4A4A4A;
+    padding: 6px 10px;
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+}
+
+/* ==================== TABELA E LISTAS (LOG DE OPERAÇÕES) ==================== */
+QTableView, QListView, QTreeView {
+    background-color: #000000;
+    alternate-background-color: #0A0A0A;
+    selection-background-color: #1A3A1A;
+    selection-color: #9FFF4F;
+    gridline-color: #2A2A2A;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+}
+
+QHeaderView::section {
+    background-color: #1A1A1A;
+    padding: 6px;
+    border: 1px solid #4A4A4A;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    color: #7FFF00;
+}
+
+/* ==================== DOCK WIDGET (PAINÉIS FLUTUANTES) ==================== */
+QDockWidget::title {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #2A2A2A, stop:1 #1A1A1A);
+    padding: 6px;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    color: #7FFF00;
+}
+
+/* ==================== EFEITO CRT (LINHAS DE SCAN) ==================== */
+QMainWindow {
+    background-image: repeating-linear-gradient(0deg, rgba(0, 255, 0, 0.03) 0px, rgba(0, 255, 0, 0.03) 2px, transparent 2px, transparent 4px);
+}

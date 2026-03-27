@@ -1,0 +1,501 @@
+/*
+ * Tema Xiaomi HyperOS
+ * Baseado no design do sistema operacional da Xiaomi
+ * Características: efeitos vítreos, ícones simplificados, gradientes sutis
+ * Cores principais: Laranja Xiaomi (#FF6900), tons neutros e efeitos blur
+ */
+
+/* ==================== FUNDO PRINCIPAL ==================== */
+QMainWindow, QDialog {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                                stop:0 #F8F9FC, stop:1 #F0F2F8);
+    background-color: #F8F9FC;
+}
+
+/* ==================== TAB BAR (ESTILO HYPEROS) ==================== */
+QTabWidget::pane {
+    border: none;
+    background-color: transparent;
+    top: -1px;
+}
+
+QTabBar::tab {
+    background: transparent;
+    color: #6B7280;
+    padding: 12px 24px;
+    margin: 0px;
+    font-family: 'MiSans', 'Segoe UI', 'Roboto', 'Noto Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+}
+
+QTabBar::tab:selected {
+    color: #FF6900;
+    border-bottom: 2px solid #FF6900;
+    background: transparent;
+}
+
+QTabBar::tab:hover:!selected {
+    color: #FF6900;
+    background: rgba(255, 105, 0, 0.05);
+    border-radius: 8px 8px 0 0;
+}
+
+/* ==================== LINE EDIT (CAMPOS DE TEXTO) ==================== */
+QLineEdit {
+    padding: 12px 16px;
+    border: 1px solid #E5E7EB;
+    border-radius: 16px;
+    background-color: #FFFFFF;
+    color: #1F2937;
+    font-family: 'MiSans', 'Segoe UI', 'Roboto', sans-serif;
+    font-size: 14px;
+    selection-background-color: #FF6900;
+    selection-color: #FFFFFF;
+}
+
+QLineEdit:focus {
+    border-color: #FF6900;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 105, 0, 0.1);
+}
+
+QLineEdit:hover:!focus {
+    border-color: #D1D5DB;
+    background-color: #FEFEFE;
+}
+
+/* ==================== PUSH BUTTON (BOTÕES) ==================== */
+QPushButton {
+    background: #FF6900;
+    border: none;
+    border-radius: 24px;
+    color: #FFFFFF;
+    padding: 10px 24px;
+    font-family: 'MiSans', 'Segoe UI', 'Roboto', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+QPushButton:hover {
+    background: #E55A00;
+    transform: translateY(-1px);
+}
+
+QPushButton:pressed {
+    background: #CC4F00;
+    transform: translateY(1px);
+}
+
+/* Botões secundários */
+QPushButton[secondary="true"] {
+    background: transparent;
+    border: 1px solid #E5E7EB;
+    color: #374151;
+}
+
+QPushButton[secondary="true"]:hover {
+    background: #F9FAFB;
+    border-color: #FF6900;
+    color: #FF6900;
+}
+
+/* Botões de texto puro */
+QPushButton[text="true"] {
+    background: transparent;
+    color: #FF6900;
+    padding: 8px 16px;
+}
+
+QPushButton[text="true"]:hover {
+    background: rgba(255, 105, 0, 0.05);
+}
+
+/* ==================== MENU BAR ==================== */
+QMenuBar {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(20px);
+    color: #1F2937;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    font-family: 'MiSans', 'Segoe UI', 'Roboto', sans-serif;
+    font-size: 13px;
+}
+
+QMenuBar::item {
+    padding: 10px 16px;
+    background: transparent;
+    border-radius: 12px;
+    margin: 4px 2px;
+}
+
+QMenuBar::item:selected {
+    background: rgba(255, 105, 0, 0.1);
+    color: #FF6900;
+}
+
+/* ==================== MENU (SUSPENSO) ==================== */
+QMenu {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 20px;
+    padding: 8px 0px;
+    font-family: 'MiSans', 'Segoe UI', 'Roboto', sans-serif;
+    font-size: 13px;
+    color: #1F2937;
+}
+
+QMenu::item {
+    padding: 10px 28px 10px 20px;
+    margin: 2px 8px;
+    border-radius: 12px;
+}
+
+QMenu::item:selected {
+    background: #FF6900;
+    color: #FFFFFF;
+}
+
+QMenu::separator {
+    height: 1px;
+    background: rgba(0, 0, 0, 0.08);
+    margin: 6px 12px;
+}
+
+/* ==================== GROUP BOX ==================== */
+QGroupBox {
+    color: #1F2937;
+    border: 1px solid #E5E7EB;
+    border-radius: 24px;
+    margin-top: 16px;
+    padding-top: 16px;
+    font-family: 'MiSans', 'Segoe UI', 'Roboto', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    background-color: #FFFFFF;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    left: 20px;
+    padding: 0 12px;
+    color: #FF6900;
+    background-color: #FFFFFF;
+}
+
+/* ==================== LABEL ==================== */
+QLabel {
+    color: #374151;
+    font-family: 'MiSans', 'Segoe UI', 'Roboto', sans-serif;
+    font-size: 13px;
+}
+
+QLabel[heading="true"] {
+    font-size: 20px;
+    font-weight: 700;
+    color: #111827;
+}
+
+QLabel[subheading="true"] {
+    font-size: 14px;
+    color: #6B7280;
+}
+
+/* ==================== SCROLL BAR ==================== */
+QScrollBar:vertical {
+    background: transparent;
+    width: 6px;
+    border-radius: 3px;
+}
+
+QScrollBar::handle:vertical {
+    background: #D1D5DB;
+    border-radius: 3px;
+    min-height: 40px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background: #FF6900;
+}
+
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 0px;
+}
+
+/* Scrollbar horizontal */
+QScrollBar:horizontal {
+    background: transparent;
+    height: 6px;
+    border-radius: 3px;
+}
+
+QScrollBar::handle:horizontal {
+    background: #D1D5DB;
+    border-radius: 3px;
+    min-width: 40px;
+}
+
+QScrollBar::handle:horizontal:hover {
+    background: #FF6900;
+}
+
+/* ==================== COMBO BOX ==================== */
+QComboBox {
+    padding: 10px 16px;
+    border: 1px solid #E5E7EB;
+    border-radius: 16px;
+    background-color: #FFFFFF;
+    color: #1F2937;
+    font-family: 'MiSans', 'Segoe UI', 'Roboto', sans-serif;
+    font-size: 14px;
+}
+
+QComboBox:hover {
+    border-color: #FF6900;
+}
+
+QComboBox::drop-down {
+    border: none;
+    width: 32px;
+}
+
+QComboBox::down-arrow {
+    image: none;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 6px solid #FF6900;
+    width: 0;
+    height: 0;
+    margin-right: 8px;
+}
+
+QComboBox QAbstractItemView {
+    background: #FFFFFF;
+    border: 1px solid #E5E7EB;
+    border-radius: 16px;
+    padding: 8px;
+    selection-background-color: #FF6900;
+    selection-color: #FFFFFF;
+}
+
+/* ==================== CHECK BOX ==================== */
+QCheckBox {
+    color: #374151;
+    font-family: 'MiSans', 'Segoe UI', 'Roboto', sans-serif;
+    font-size: 14px;
+    spacing: 12px;
+}
+
+QCheckBox::indicator {
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    border: 2px solid #D1D5DB;
+    background: #FFFFFF;
+}
+
+QCheckBox::indicator:hover {
+    border-color: #FF6900;
+}
+
+QCheckBox::indicator:checked {
+    background: #FF6900;
+    border-color: #FF6900;
+}
+
+/* ==================== RADIO BUTTON ==================== */
+QRadioButton {
+    color: #374151;
+    font-family: 'MiSans', 'Segoe UI', 'Roboto', sans-serif;
+    font-size: 14px;
+    spacing: 12px;
+}
+
+QRadioButton::indicator {
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    border: 2px solid #D1D5DB;
+    background: #FFFFFF;
+}
+
+QRadioButton::indicator:hover {
+    border-color: #FF6900;
+}
+
+QRadioButton::indicator:checked {
+    background: #FF6900;
+    border: 2px solid #FF6900;
+}
+
+/* ==================== SLIDER ==================== */
+QSlider::groove:horizontal {
+    height: 4px;
+    background: #E5E7EB;
+    border-radius: 2px;
+}
+
+QSlider::handle:horizontal {
+    background: #FF6900;
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    margin: -8px 0;
+}
+
+QSlider::handle:horizontal:hover {
+    background: #E55A00;
+    transform: scale(1.1);
+}
+
+QSlider::sub-page:horizontal {
+    background: #FF6900;
+    border-radius: 2px;
+}
+
+/* ==================== PROGRESS BAR ==================== */
+QProgressBar {
+    border: none;
+    border-radius: 12px;
+    background-color: #E5E7EB;
+    text-align: center;
+    color: #1F2937;
+    font-family: 'MiSans', 'Segoe UI', 'Roboto', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    height: 8px;
+}
+
+QProgressBar::chunk {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                                stop:0 #FF6900, stop:1 #FF8A3C);
+    border-radius: 12px;
+}
+
+/* ==================== SPIN BOX ==================== */
+QSpinBox {
+    padding: 10px 12px;
+    border: 1px solid #E5E7EB;
+    border-radius: 16px;
+    background-color: #FFFFFF;
+    color: #1F2937;
+    font-family: 'MiSans', 'Segoe UI', 'Roboto', sans-serif;
+    font-size: 14px;
+}
+
+QSpinBox:focus {
+    border-color: #FF6900;
+}
+
+/* ==================== TOOL BAR ==================== */
+QToolBar {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(20px);
+    border: none;
+    spacing: 8px;
+    padding: 8px 12px;
+}
+
+QToolBar QToolButton {
+    background: transparent;
+    border-radius: 12px;
+    padding: 8px;
+}
+
+QToolBar QToolButton:hover {
+    background: rgba(255, 105, 0, 0.1);
+}
+
+/* ==================== STATUS BAR ==================== */
+QStatusBar {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(20px);
+    color: #6B7280;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    font-family: 'MiSans', 'Segoe UI', 'Roboto', sans-serif;
+    font-size: 12px;
+    padding: 4px 12px;
+}
+
+/* ==================== TOOL TIP ==================== */
+QToolTip {
+    background-color: #1F2937;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 12px;
+    padding: 8px 12px;
+    font-family: 'MiSans', 'Segoe UI', 'Roboto', sans-serif;
+    font-size: 12px;
+}
+
+/* ==================== TABLE / LIST / TREE VIEW ==================== */
+QTableView, QListView, QTreeView {
+    background-color: #FFFFFF;
+    alternate-background-color: #F9FAFB;
+    selection-background-color: rgba(255, 105, 0, 0.15);
+    selection-color: #FF6900;
+    gridline-color: #F0F2F8;
+    border: none;
+    font-family: 'MiSans', 'Segoe UI', 'Roboto', sans-serif;
+    font-size: 13px;
+    outline: none;
+}
+
+QHeaderView::section {
+    background-color: #F9FAFB;
+    padding: 12px 16px;
+    border: none;
+    border-bottom: 1px solid #E5E7EB;
+    font-weight: 600;
+    color: #374151;
+}
+
+QTableView::item:selected, QListView::item:selected, QTreeView::item:selected {
+    background-color: rgba(255, 105, 0, 0.1);
+    color: #FF6900;
+}
+
+/* ==================== SPLITTER ==================== */
+QSplitter::handle {
+    background: #E5E7EB;
+    width: 2px;
+    height: 2px;
+}
+
+QSplitter::handle:hover {
+    background: #FF6900;
+}
+
+/* ==================== DOCK WIDGET ==================== */
+QDockWidget {
+    titlebar-close-icon: url(none);
+    titlebar-normal-icon: url(none);
+}
+
+QDockWidget::title {
+    background: #F9FAFB;
+    padding: 8px 12px;
+    font-family: 'MiSans', 'Segoe UI', 'Roboto', sans-serif;
+    font-weight: 600;
+    color: #1F2937;
+}
+
+/* ==================== MESSAGE BOX ==================== */
+QMessageBox {
+    background-color: #FFFFFF;
+    border-radius: 28px;
+    font-family: 'MiSans', 'Segoe UI', 'Roboto', sans-serif;
+}
+
+/* ==================== ANIMAÇÕES E EFEITOS ESPECIAIS ==================== */
+QPushButton, QTabBar::tab, QComboBox, QLineEdit {
+    transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+}
+
+/* Efeito de profundidade para itens selecionados */
+*:focus {
+    outline: none;
+}

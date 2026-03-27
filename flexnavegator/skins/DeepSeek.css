@@ -1,0 +1,562 @@
+/*
+ * Estilo DeepSeek - Interface Moderna e Tecnológica
+ * Baseado na identidade visual oficial do DeepSeek
+ * Cores principais: DeepSeek Blue (#3C5DFF), fundo escuro (#121212) e efeitos vítreos
+ * Ícone icônico: Baleia como símbolo de exploração profunda [citation:6][citation:8]
+ */
+
+/* ==================== FUNDO PRINCIPAL ==================== */
+QMainWindow, QDialog {
+    background-color: #121212;
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                                stop:0 #121212, stop:0.5 #1A1A2E, stop:1 #121212);
+}
+
+/* ==================== TAB BAR (ESTILO DEEPSEEK) ==================== */
+QTabWidget::pane {
+    border: none;
+    background-color: transparent;
+    top: -1px;
+}
+
+QTabBar::tab {
+    background: transparent;
+    color: #8A8A9F;
+    padding: 12px 24px;
+    margin: 0px 4px;
+    font-family: 'Inter', 'Segoe UI', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+}
+
+QTabBar::tab:selected {
+    color: #3C5DFF;
+    border-bottom: 2px solid #3C5DFF;
+}
+
+QTabBar::tab:hover:!selected {
+    color: #6B7FFF;
+    background: rgba(60, 93, 255, 0.08);
+    border-radius: 8px 8px 0 0;
+}
+
+/* ==================== LINE EDIT (CAMPOS DE TEXTO) ==================== */
+QLineEdit {
+    padding: 12px 16px;
+    border: 1px solid #2A2A3A;
+    border-radius: 12px;
+    background-color: #1E1E2A;
+    color: #FFFFFF;
+    font-family: 'Inter', 'Segoe UI', 'Roboto', sans-serif;
+    font-size: 14px;
+    selection-background-color: #3C5DFF;
+    selection-color: #FFFFFF;
+}
+
+QLineEdit:focus {
+    border-color: #3C5DFF;
+    outline: none;
+    background-color: #252536;
+    box-shadow: 0 0 0 3px rgba(60, 93, 255, 0.2);
+}
+
+QLineEdit:hover:!focus {
+    border-color: #3C5DFF;
+    background-color: #252536;
+}
+
+/* ==================== PUSH BUTTON (BOTÕES) ==================== */
+QPushButton {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #3C5DFF, stop:1 #2A4AEE);
+    border: none;
+    border-radius: 12px;
+    color: #FFFFFF;
+    padding: 10px 24px;
+    font-family: 'Inter', 'Segoe UI', 'Roboto', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+QPushButton:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #4D6CFF, stop:1 #3C5DFF);
+    transform: translateY(-1px);
+}
+
+QPushButton:pressed {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #2A4AEE, stop:1 #1A3AD5);
+    transform: translateY(1px);
+}
+
+/* Botões secundários (outline) */
+QPushButton[secondary="true"] {
+    background: transparent;
+    border: 1px solid #3C5DFF;
+    color: #3C5DFF;
+}
+
+QPushButton[secondary="true"]:hover {
+    background: rgba(60, 93, 255, 0.1);
+    border-color: #6B7FFF;
+    color: #6B7FFF;
+}
+
+/* Botões ghost */
+QPushButton[ghost="true"] {
+    background: transparent;
+    color: #8A8A9F;
+}
+
+QPushButton[ghost="true"]:hover {
+    background: rgba(138, 138, 159, 0.1);
+    color: #FFFFFF;
+}
+
+/* ==================== MENU BAR ==================== */
+QMenuBar {
+    background: rgba(18, 18, 24, 0.95);
+    backdrop-filter: blur(10px);
+    color: #FFFFFF;
+    border-bottom: 1px solid rgba(60, 93, 255, 0.2);
+    font-family: 'Inter', 'Segoe UI', 'Roboto', sans-serif;
+    font-size: 13px;
+}
+
+QMenuBar::item {
+    padding: 10px 16px;
+    background: transparent;
+    border-radius: 8px;
+    margin: 4px 2px;
+}
+
+QMenuBar::item:selected {
+    background: rgba(60, 93, 255, 0.15);
+    color: #3C5DFF;
+}
+
+/* ==================== MENU (SUSPENSO) ==================== */
+QMenu {
+    background: rgba(30, 30, 42, 0.98);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(60, 93, 255, 0.3);
+    border-radius: 16px;
+    padding: 8px 0px;
+    font-family: 'Inter', 'Segoe UI', 'Roboto', sans-serif;
+    font-size: 13px;
+    color: #FFFFFF;
+}
+
+QMenu::item {
+    padding: 8px 28px 8px 20px;
+    margin: 2px 8px;
+    border-radius: 10px;
+}
+
+QMenu::item:selected {
+    background: #3C5DFF;
+    color: #FFFFFF;
+}
+
+QMenu::separator {
+    height: 1px;
+    background: rgba(60, 93, 255, 0.2);
+    margin: 6px 12px;
+}
+
+/* ==================== GROUP BOX ==================== */
+QGroupBox {
+    color: #FFFFFF;
+    border: 1px solid rgba(60, 93, 255, 0.3);
+    border-radius: 20px;
+    margin-top: 16px;
+    padding-top: 16px;
+    font-family: 'Inter', 'Segoe UI', 'Roboto', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    background-color: rgba(30, 30, 42, 0.5);
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    left: 20px;
+    padding: 0 12px;
+    color: #3C5DFF;
+    background-color: #121212;
+}
+
+/* ==================== LABEL ==================== */
+QLabel {
+    color: #E0E0E0;
+    font-family: 'Inter', 'Segoe UI', 'Roboto', sans-serif;
+    font-size: 13px;
+}
+
+QLabel[heading="true"] {
+    font-size: 24px;
+    font-weight: 700;
+    color: #FFFFFF;
+    letter-spacing: -0.5px;
+}
+
+QLabel[subheading="true"] {
+    font-size: 14px;
+    color: #8A8A9F;
+}
+
+QLabel[accent="true"] {
+    color: #3C5DFF;
+    font-weight: 600;
+}
+
+/* ==================== SCROLL BAR ==================== */
+QScrollBar:vertical {
+    background: transparent;
+    width: 6px;
+    border-radius: 3px;
+}
+
+QScrollBar::handle:vertical {
+    background: #3C5DFF;
+    border-radius: 3px;
+    min-height: 40px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background: #6B7FFF;
+}
+
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 0px;
+}
+
+/* ScrollBar horizontal */
+QScrollBar:horizontal {
+    background: transparent;
+    height: 6px;
+    border-radius: 3px;
+}
+
+QScrollBar::handle:horizontal {
+    background: #3C5DFF;
+    border-radius: 3px;
+    min-width: 40px;
+}
+
+QScrollBar::handle:horizontal:hover {
+    background: #6B7FFF;
+}
+
+/* ==================== COMBO BOX ==================== */
+QComboBox {
+    padding: 10px 16px;
+    border: 1px solid #2A2A3A;
+    border-radius: 12px;
+    background-color: #1E1E2A;
+    color: #FFFFFF;
+    font-family: 'Inter', 'Segoe UI', 'Roboto', sans-serif;
+    font-size: 14px;
+}
+
+QComboBox:hover {
+    border-color: #3C5DFF;
+    background-color: #252536;
+}
+
+QComboBox::drop-down {
+    border: none;
+    width: 32px;
+}
+
+QComboBox::down-arrow {
+    image: none;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 6px solid #3C5DFF;
+    width: 0;
+    height: 0;
+    margin-right: 8px;
+}
+
+QComboBox QAbstractItemView {
+    background: #1E1E2A;
+    border: 1px solid #3C5DFF;
+    border-radius: 12px;
+    padding: 8px;
+    selection-background-color: #3C5DFF;
+    selection-color: #FFFFFF;
+}
+
+/* ==================== CHECK BOX ==================== */
+QCheckBox {
+    color: #E0E0E0;
+    font-family: 'Inter', 'Segoe UI', 'Roboto', sans-serif;
+    font-size: 13px;
+    spacing: 12px;
+}
+
+QCheckBox::indicator {
+    width: 18px;
+    height: 18px;
+    border-radius: 5px;
+    border: 2px solid #4A4A60;
+    background: transparent;
+}
+
+QCheckBox::indicator:hover {
+    border-color: #3C5DFF;
+}
+
+QCheckBox::indicator:checked {
+    background: #3C5DFF;
+    border-color: #3C5DFF;
+}
+
+/* ==================== RADIO BUTTON ==================== */
+QRadioButton {
+    color: #E0E0E0;
+    font-family: 'Inter', 'Segoe UI', 'Roboto', sans-serif;
+    font-size: 13px;
+    spacing: 12px;
+}
+
+QRadioButton::indicator {
+    width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    border: 2px solid #4A4A60;
+    background: transparent;
+}
+
+QRadioButton::indicator:hover {
+    border-color: #3C5DFF;
+}
+
+QRadioButton::indicator:checked {
+    background: #3C5DFF;
+    border: 2px solid #3C5DFF;
+}
+
+/* ==================== SLIDER ==================== */
+QSlider::groove:horizontal {
+    height: 4px;
+    background: #2A2A3A;
+    border-radius: 2px;
+}
+
+QSlider::handle:horizontal {
+    background: #3C5DFF;
+    width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    margin: -7px 0;
+}
+
+QSlider::handle:horizontal:hover {
+    background: #6B7FFF;
+    transform: scale(1.1);
+}
+
+QSlider::sub-page:horizontal {
+    background: #3C5DFF;
+    border-radius: 2px;
+}
+
+/* ==================== PROGRESS BAR ==================== */
+QProgressBar {
+    border: none;
+    border-radius: 10px;
+    background-color: #2A2A3A;
+    text-align: center;
+    color: #FFFFFF;
+    font-family: 'Inter', 'Segoe UI', 'Roboto', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    height: 8px;
+}
+
+QProgressBar::chunk {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                                stop:0 #3C5DFF, stop:1 #6B7FFF);
+    border-radius: 10px;
+}
+
+/* ==================== SPIN BOX ==================== */
+QSpinBox {
+    padding: 10px 12px;
+    border: 1px solid #2A2A3A;
+    border-radius: 12px;
+    background-color: #1E1E2A;
+    color: #FFFFFF;
+    font-family: 'Inter', 'Segoe UI', 'Roboto', sans-serif;
+    font-size: 14px;
+}
+
+QSpinBox:focus {
+    border-color: #3C5DFF;
+}
+
+QSpinBox::up-button, QSpinBox::down-button {
+    background: #2A2A3A;
+    border-radius: 6px;
+}
+
+/* ==================== TOOL BAR ==================== */
+QToolBar {
+    background: rgba(30, 30, 42, 0.8);
+    backdrop-filter: blur(10px);
+    border: none;
+    border-radius: 16px;
+    spacing: 8px;
+    padding: 8px 12px;
+}
+
+QToolBar QToolButton {
+    background: transparent;
+    border-radius: 10px;
+    padding: 8px;
+    color: #8A8A9F;
+}
+
+QToolBar QToolButton:hover {
+    background: rgba(60, 93, 255, 0.2);
+    color: #3C5DFF;
+}
+
+/* ==================== STATUS BAR ==================== */
+QStatusBar {
+    background: rgba(18, 18, 24, 0.95);
+    backdrop-filter: blur(10px);
+    color: #8A8A9F;
+    border-top: 1px solid rgba(60, 93, 255, 0.2);
+    font-family: 'Inter', 'Segoe UI', 'Roboto', sans-serif;
+    font-size: 12px;
+    padding: 4px 12px;
+}
+
+/* ==================== TOOL TIP ==================== */
+QToolTip {
+    background-color: #1E1E2A;
+    color: #FFFFFF;
+    border: 1px solid #3C5DFF;
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-family: 'Inter', 'Segoe UI', 'Roboto', sans-serif;
+    font-size: 12px;
+}
+
+/* ==================== TABLE / LIST / TREE VIEW ==================== */
+QTableView, QListView, QTreeView {
+    background-color: #1E1E2A;
+    alternate-background-color: #252536;
+    selection-background-color: rgba(60, 93, 255, 0.2);
+    selection-color: #3C5DFF;
+    gridline-color: #2A2A3A;
+    border: none;
+    font-family: 'Inter', 'Segoe UI', 'Roboto', sans-serif;
+    font-size: 13px;
+    outline: none;
+}
+
+QHeaderView::section {
+    background-color: #121212;
+    padding: 12px 16px;
+    border: none;
+    border-bottom: 1px solid #3C5DFF;
+    font-weight: 600;
+    color: #3C5DFF;
+}
+
+QTableView::item:selected, QListView::item:selected, QTreeView::item:selected {
+    background-color: rgba(60, 93, 255, 0.15);
+    color: #3C5DFF;
+}
+
+/* ==================== SPLITTER ==================== */
+QSplitter::handle {
+    background: #2A2A3A;
+    width: 2px;
+    height: 2px;
+}
+
+QSplitter::handle:hover {
+    background: #3C5DFF;
+}
+
+/* ==================== DOCK WIDGET ==================== */
+QDockWidget {
+    titlebar-close-icon: url(none);
+    titlebar-normal-icon: url(none);
+}
+
+QDockWidget::title {
+    background: #1E1E2A;
+    padding: 8px 12px;
+    font-family: 'Inter', 'Segoe UI', 'Roboto', sans-serif;
+    font-weight: 600;
+    color: #FFFFFF;
+    border-bottom: 1px solid #3C5DFF;
+}
+
+/* ==================== MESSAGE BOX ==================== */
+QMessageBox {
+    background-color: #1E1E2A;
+    border-radius: 20px;
+    font-family: 'Inter', 'Segoe UI', 'Roboto', sans-serif;
+}
+
+/* ==================== ANIMAÇÕES E EFEITOS ESPECIAIS ==================== */
+QPushButton, QTabBar::tab, QComboBox, QLineEdit {
+    transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+}
+
+/* Efeito de brilho para elementos focados */
+*:focus {
+    outline: none;
+}
+
+/* ==================== ELEMENTOS ADICIONAIS INSPIRADOS NO DEEPSEEK ==================== */
+
+/* Botão com ícone de baleia (estilização para representar a logo DeepSeek) [citation:6] */
+QPushButton[whale="true"] {
+    background: transparent;
+    border: 2px solid #3C5DFF;
+    border-radius: 30px;
+    color: #3C5DFF;
+    padding: 8px 20px;
+}
+
+QPushButton[whale="true"]:hover {
+    background: #3C5DFF;
+    color: #FFFFFF;
+}
+
+/* Efeito glassmorphism para containers especiais */
+QFrame[glass="true"] {
+    background: rgba(30, 30, 42, 0.6);
+    backdrop-filter: blur(10px);
+    border-radius: 24px;
+    border: 1px solid rgba(60, 93, 255, 0.3);
+}
+
+/* Mensagens de chat estilo DeepSeek [citation:2] */
+QTextEdit[chat="user"] {
+    background: #3C5DFF;
+    color: #FFFFFF;
+    border-radius: 20px;
+    padding: 12px 16px;
+    margin: 8px;
+}
+
+QTextEdit[chat="assistant"] {
+    background: #1E1E2A;
+    color: #E0E0E0;
+    border-radius: 20px;
+    padding: 12px 16px;
+    margin: 8px;
+    border: 1px solid rgba(60, 93, 255, 0.3);
+}
